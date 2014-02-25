@@ -1,3 +1,5 @@
 spec/fixtures
 pkg/*
-
+Vagrantfile
+.vagrant/
+Gemfile.lock
