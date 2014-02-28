@@ -1,9 +1,16 @@
 require 'spec_helper'
 
-describe 'sssd', :type => :class do
+describe 'sssd::service', :type => :class do
+  let(:pre_condition) { "class { 'sssd': }" }
 
   it { should create_class('sssd::service') }
-  it { should contain_service('sssd').with_ensure('running').with_enable('true') }
 
+  it do
+    should contain_service('sssd').with({
+      'ensure'      => 'running',
+      'enable'      => 'true',
+      'hasstatus'   => 'true',
+      'hasrestart'  => 'true',
+    })
+  end
 end
-

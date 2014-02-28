@@ -23,24 +23,34 @@ class sssd::config {
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    notify  => Class['sssd::service'],
+    notify  => Service['sssd'],
     content => template('sssd/sssd.conf.erb'),
   }
 
   file { '/etc/pam.d/password-auth':
+    ensure  => link,
+    target  => 'password-auth-ac',
+  }
+
+  file { '/etc/pam.d/password-auth-ac':
     ensure  => file,
     owner   => 'root',
     group   => 'root',
     mode    => '0444',
-    source  => 'puppet:///modules/sssd/password-auth',
+    content => template('sssd/password-auth-ac.erb'),
   }
 
   file { '/etc/pam.d/system-auth':
+    ensure  => link,
+    target  => 'system-auth-ac',
+  }
+
+  file { '/etc/pam.d/system-auth-ac':
     ensure  => file,
     owner   => 'root',
     group   => 'root',
     mode    => '0444',
-    source  => 'puppet:///modules/sssd/system-auth',
+    content => template('sssd/system-auth-ac.erb'),
   }
 
   file { '/etc/nsswitch.conf':
@@ -48,7 +58,7 @@ class sssd::config {
     owner   => 'root',
     group   => 'root',
     mode    => '0444',
-    source  => 'puppet:///modules/sssd/nsswitch.conf',
+    content => template('sssd/nsswitch.conf.erb'),
   }
 
   case $sssd::logsagent {

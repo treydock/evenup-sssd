@@ -18,5 +18,9 @@ netgroup:   nisplus
 
 publickey:  nisplus
 
+<% if @with_autofs -%>
+automount:  files sss
+<% else -%>
 automount:  files nisplus
+<% end -%>
 aliases:    files nisplus

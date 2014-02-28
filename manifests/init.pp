@@ -50,6 +50,7 @@
 # Copyright 2013 EvenUp.
 #
 class sssd (
+  $package_ensure     = 'latest',
   $filter_groups      = 'root,wheel',
   $filter_users       = 'root',
   $ldap_base          = 'dc=example,dc=org',
@@ -58,8 +59,14 @@ class sssd (
   $ldap_group_member  = 'uniquemember',
   $ldap_tls_reqcert   = 'demand',
   $ldap_tls_cacert    = '/etc/pki/tls/certs/ca-bundle.crt',
+  $ldap_schema        = 'rfc2307',
   $logsagent          = '',
+  $make_home_dir      = true,
+  $with_autofs        = false,
 ){
+
+  validate_bool($make_home_dir)
+  validate_bool($with_autofs)
 
   class { 'sssd::install': }
 
