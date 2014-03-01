@@ -62,8 +62,8 @@ class sssd (
   $ldap_schema        = 'rfc2307',
   $logsagent          = '',
   $make_home_dir      = true,
-  $with_autofs        = false,
-){
+  $with_autofs        = false
+) {
 
   validate_bool($make_home_dir)
   validate_bool($with_autofs)
