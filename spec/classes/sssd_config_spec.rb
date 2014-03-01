@@ -112,7 +112,7 @@ describe 'sssd::config', :type => :class do
 
   it { should contain_file('/etc/sssd/sssd.conf').without_content(/^\[autofs\]$/) }
   it { should contain_file('/etc/sssd/sssd.conf').without_content(/^autofs_provider = ldap$/) }
-  it { should contain_file('/etc/sssd/sssd.conf').without_content(/^ldap_autofs_search_base=cn = automount,dc=example,dc=com$/) }
+  it { should contain_file('/etc/sssd/sssd.conf').without_content(/^ldap_autofs_search_base = .*$/) }
   it { should contain_file('/etc/sssd/sssd.conf').without_content(/^ldap_autofs_map_object_class = automountMap$/) }
   it { should contain_file('/etc/sssd/sssd.conf').without_content(/^ldap_autofs_entry_object_class = automount$/) }
   it { should contain_file('/etc/sssd/sssd.conf').without_content(/^ldap_autofs_map_name = ou$/) }
@@ -248,13 +248,19 @@ describe 'sssd::config', :type => :class do
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^services = nss, pam, autofs$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^\[autofs\]$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^autofs_provider = ldap$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_search_base=cn = automount,dc=example,dc=com$/) }
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_search_base = cn=automount,dc=example,dc=com$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_map_object_class = automountMap$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_entry_object_class = automount$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_map_name = ou$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_entry_key = cn$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_entry_value = automountInformation$/) }
     it { should contain_file('/etc/nsswitch.conf').with_content(/^automount:  files sss$/)}
+
+    context 'when ldap_autofs_search_base => cn=automount,dc=company,dc=com' do
+      let(:pre_condition) { "class { 'sssd': with_autofs => true, ldap_autofs_search_base => 'cn=automount,dc=company,dc=com' }" }
+
+      it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_search_base = cn=automount,dc=company,dc=com$/) }
+    end
   end
 
 end

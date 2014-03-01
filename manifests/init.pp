@@ -50,19 +50,20 @@
 # Copyright 2013 EvenUp.
 #
 class sssd (
-  $package_ensure     = 'latest',
-  $filter_groups      = 'root,wheel',
-  $filter_users       = 'root',
-  $ldap_base          = 'dc=example,dc=org',
-  $ldap_uri           = 'ldap://ldap.example.org',
-  $ldap_access_filter = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
-  $ldap_group_member  = 'uniquemember',
-  $ldap_tls_reqcert   = 'demand',
-  $ldap_tls_cacert    = '/etc/pki/tls/certs/ca-bundle.crt',
-  $ldap_schema        = 'rfc2307',
-  $logsagent          = '',
-  $make_home_dir      = true,
-  $with_autofs        = false
+  $package_ensure           = 'latest',
+  $filter_groups            = 'root,wheel',
+  $filter_users             = 'root',
+  $ldap_base                = 'dc=example,dc=org',
+  $ldap_uri                 = 'ldap://ldap.example.org',
+  $ldap_access_filter       = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
+  $ldap_group_member        = 'uniquemember',
+  $ldap_tls_reqcert         = 'demand',
+  $ldap_tls_cacert          = '/etc/pki/tls/certs/ca-bundle.crt',
+  $ldap_schema              = 'rfc2307',
+  $logsagent                = '',
+  $make_home_dir            = true,
+  $with_autofs              = false,
+  $ldap_autofs_search_base  = 'cn=automount,dc=example,dc=com'
 ) {
 
   validate_bool($make_home_dir)
