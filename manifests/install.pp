@@ -16,6 +16,7 @@ class sssd::install {
 
   $package_ensure   = $sssd::package_ensure
   $with_autofs      = $sssd::with_autofs
+  $with_sudo        = $sssd::with_sudo
   $autofs_packages  = ['libsss_autofs', 'autofs']
   $sudo_packages    = ['libsss_sudo']
 

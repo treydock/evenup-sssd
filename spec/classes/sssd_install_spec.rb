@@ -27,5 +27,13 @@ describe 'sssd::install', :type => :class do
     it { should contain_package('libsss_autofs').with_ensure('present') }
     it { should contain_package('autofs').with_ensure('present') }
   end
+
+  context "when with_sudo => true" do
+    let :pre_condition do
+      "class { 'sssd': with_sudo => true }"
+    end
+
+    it { should contain_package('libsss_sudo').with_ensure('present') }
+  end
 end
 
