@@ -18,6 +18,14 @@ class sssd::config {
     fail("Use of private class ${name} by ${caller_module_name}")
   }
 
+  file { '/etc/openldap/ldap.conf':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('sssd/ldap.conf.erb'),
+  }
+
   file { '/etc/sssd/sssd.conf':
     ensure  => 'file',
     owner   => 'root',

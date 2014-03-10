@@ -71,7 +71,7 @@ describe 'sssd::config', :type => :class do
       'debug_level = 0x02F0',
       'reconnection_retries = 3',
       'sbus_timeout = 30',
-      'services = nss, pam',
+      'services = nss,pam',
       'domains = LDAP',
       '[nss]',
       'debug_level = 0x02F0',
@@ -84,29 +84,28 @@ describe 'sssd::config', :type => :class do
       'offline_credentials_expiration = 0',
       '[domain/LDAP]',
       'debug_level = 0x02F0',
+      'cache_credentials = TRUE',
+      'entry_cache_timeout = 6000',
+      'enumerate = TRUE',
       'id_provider = ldap',
       'auth_provider = ldap',
       'chpass_provider = ldap',
       'access_provider = ldap',
-      'cache_credentials = true',
-      'ldap_schema = rfc2307',
-      'cache_credentials = true',
-      'enumerate = True',
-      'entry_cache_timeout = 6000',
-      'ldap_id_use_start_tls = true',
-      'ldap_search_base = dc=example,dc=org',
       'ldap_uri = ldap://ldap.example.org',
-      'ldap_access_filter = (&(objectclass=shadowaccount)(objectclass=posixaccount))',
-      'ldap_group_member = uniquemember',
-      'ldap_group_object_class = posixGroup',
-      'ldap_group_name = cn',
+      'ldap_search_base = dc=example,dc=org',
       'ldap_network_timeout = 3',
       'ldap_tls_reqcert = demand',
       'ldap_tls_cacert = /etc/pki/tls/certs/ca-bundle.crt',
-      'ldap_chpass_update_last_change = true',
+      'ldap_schema = rfc2307',
+      'ldap_id_use_start_tls = TRUE',
+      'ldap_chpass_update_last_change = TRUE',
+      'ldap_group_member = uniquemember',
+      'ldap_group_object_class = posixGroup',
+      'ldap_group_name = cn',
       'ldap_pwd_policy = shadow',
       'ldap_account_expire_policy = shadow',
-      'ldap_access_order = expire',
+      'ldap_access_order = filter,expire',
+      'ldap_access_filter = (&(objectclass=shadowaccount)(objectclass=posixaccount))',
     ]
   end
 
@@ -168,63 +167,76 @@ describe 'sssd::config', :type => :class do
     ])
   end
 
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^passwd:     files sss$/)}
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^shadow:     files sss$/)}
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^group:      files sss$/)}
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^automount:  files nisplus$/)}
+  it { should contain_file('/etc/nsswitch.conf').with_content(/^passwd:     files sss$/) }
+  it { should contain_file('/etc/nsswitch.conf').with_content(/^shadow:     files sss$/) }
+  it { should contain_file('/etc/nsswitch.conf').with_content(/^group:      files sss$/) }
+  it { should contain_file('/etc/nsswitch.conf').with_content(/^automount:  files$/) }
+  it { should contain_file('/etc/nsswitch.conf').with_content(/^sudoers:    files$/) }
 
   context 'when setting filter_groups' do
     let(:pre_condition) { "class { 'sssd': filter_groups => 'foo,bar' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/filter_groups = foo,bar/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/filter_groups = foo,bar/) }
   end
 
   context 'when setting filter_users' do
     let(:pre_condition) { "class { 'sssd': filter_users => 'bob,john' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/filter_users = bob,john/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/filter_users = bob,john/) }
   end
 
   context 'when setting ldap_base' do
     let(:pre_condition) { "class { 'sssd': ldap_base => 'dc=company,dc=com' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_search_base = dc=company,dc=com/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_search_base = dc=company,dc=com/) }
   end
 
   context 'when setting ldap_uri' do
     let(:pre_condition) { "class { 'sssd': ldap_uri => 'ldap://ldap.company.com' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_uri = ldap:\/\/ldap.company.com/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_uri = ldap:\/\/ldap.company.com/) }
   end
 
   context 'when setting ldap_access_filter' do
     let(:pre_condition) { "class { 'sssd': ldap_access_filter => 'objectclass=posixaccount' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_access_filter = objectclass=posixaccount/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_access_filter = objectclass=posixaccount/) }
   end
 
   context 'when setting ldap_group_member' do
     let(:pre_condition) { "class { 'sssd': ldap_group_member => 'memberUid' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_group_member = memberUid/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_group_member = memberUid/) }
   end
 
   context 'when setting ldap_tls_reqcert' do
     let(:pre_condition) { "class { 'sssd': ldap_tls_reqcert => 'always' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_tls_reqcert = always/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_tls_reqcert = always/) }
   end
 
   context 'when setting ldap_tls_cacert' do
     let(:pre_condition) { "class { 'sssd': ldap_tls_cacert => '/tmp/cert' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_tls_cacert = \/tmp\/cert/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_tls_cacert = \/tmp\/cert/) }
   end
 
   context 'when setting ldap_schema' do
     let(:pre_condition) { "class { 'sssd': ldap_schema => 'rfc2307bis' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_schema = rfc2307bis$/)}
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_schema = rfc2307bis$/) }
+  end
+
+  context 'when setting ldap_pwd_policy' do
+    let(:pre_condition) { "class { 'sssd': ldap_pwd_policy => 'none' }" }
+
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_pwd_policy = none$/) }
+  end
+
+  context 'when setting ldap_account_expire_policy' do
+    let(:pre_condition) { "class { 'sssd': ldap_account_expire_policy => '389ds' }" }
+
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_account_expire_policy = 389ds$/) }
   end
 
   context 'when logsagent => beaver' do
@@ -245,10 +257,10 @@ describe 'sssd::config', :type => :class do
   context 'when with_autofs => true' do
     let(:pre_condition) { "class { 'sssd': with_autofs => true }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^services = nss, pam, autofs$/) }
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^services = nss,pam,autofs$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^\[autofs\]$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^autofs_provider = ldap$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_search_base = cn=automount,dc=example,dc=com$/) }
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_search_base = cn=automount,dc=example,dc=org$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_map_object_class = automountMap$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_entry_object_class = automount$/) }
     it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_map_name = ou$/) }
@@ -263,4 +275,24 @@ describe 'sssd::config', :type => :class do
     end
   end
 
+  context 'when with_sudo => true' do
+    let(:pre_condition) { "class { 'sssd': with_sudo => true }" }
+
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^services = nss,pam,sudo$/) }
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^\[sudo\]$/) }
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^sudo_provider = ldap$/) }
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_sudo_search_base = ou=sudoers,dc=example,dc=org$/) }
+    it { should contain_file('/etc/nsswitch.conf').with_content(/^sudoers:    files sss$/)}
+
+    context 'when ldap_sudo_search_base => ou=sudoers,dc=company,dc=com' do
+      let(:pre_condition) { "class { 'sssd': with_sudo => true, ldap_sudo_search_base => 'ou=sudoers,dc=company,dc=com' }" }
+
+      it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_sudo_search_base = ou=sudoers,dc=company,dc=com$/) }
+    end
+  end
+
+  context 'when with_autofs => true and with_sudo => true' do
+    let(:pre_condition) { "class { 'sssd': with_autofs => true, with_sudo => true }" }
+    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^services = nss,pam,autofs,sudo$/) }
+  end
 end

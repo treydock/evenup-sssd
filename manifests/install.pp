@@ -17,6 +17,7 @@ class sssd::install {
   $package_ensure   = $sssd::package_ensure
   $with_autofs      = $sssd::with_autofs
   $autofs_packages  = ['libsss_autofs', 'autofs']
+  $sudo_packages    = ['libsss_sudo']
 
   if $caller_module_name != $module_name {
     fail("Use of private class ${name} by ${caller_module_name}")
@@ -32,6 +33,10 @@ class sssd::install {
 
   if $with_autofs {
     ensure_packages($autofs_packages)
+  }
+
+  if $with_sudo {
+    ensure_packages($sudo_packages)
   }
 
 }

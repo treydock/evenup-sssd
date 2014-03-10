@@ -50,39 +50,61 @@
 # Copyright 2013 EvenUp.
 #
 class sssd (
-  $package_ensure           = 'latest',
-  $filter_groups            = 'root,wheel',
-  $filter_users             = 'root',
-  $ldap_base                = 'dc=example,dc=org',
-  $ldap_uri                 = 'ldap://ldap.example.org',
-  $ldap_access_filter       = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
-  $ldap_group_member        = 'uniquemember',
-  $ldap_tls_reqcert         = 'demand',
-  $ldap_tls_cacert          = '/etc/pki/tls/certs/ca-bundle.crt',
-  $ldap_schema              = 'rfc2307',
-  $logsagent                = '',
-  $make_home_dir            = true,
-  $with_autofs              = false,
-  $ldap_autofs_search_base  = 'cn=automount,dc=example,dc=com'
+  $package_ensure             = 'latest',
+  $filter_groups              = 'root,wheel',
+  $filter_users               = 'root',
+  $ldap_base                  = 'dc=example,dc=org',
+  $ldap_uri                   = 'ldap://ldap.example.org',
+  $ldap_access_filter         = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
+  $ldap_group_member          = 'uniquemember',
+  $ldap_tls_reqcert           = 'demand',
+  $ldap_tls_cacert            = '/etc/pki/tls/certs/ca-bundle.crt',
+  $ldap_schema                = 'rfc2307',
+  $ldap_pwd_policy            = 'shadow',
+  $ldap_account_expire_policy = 'shadow',
+  $logsagent                  = '',
+  $make_home_dir              = true,
+  $with_autofs                = false,
+  $with_sudo                  = false,
+  $ldap_autofs_search_base    = 'UNSET',
+  $ldap_sudo_search_base      = 'UNSET'
 ) {
 
   validate_bool($make_home_dir)
   validate_bool($with_autofs)
 
-  class { 'sssd::install': }
+  $default_services = ['nss','pam']
 
-  class { 'sssd::config': }
+  if $with_autofs {
+    $autofs_service = ['autofs']
+  } else {
+    $autofs_service = []
+  }
 
-  class { 'sssd::service': }
+  if $with_sudo {
+    $sudo_service = ['sudo']
+  } else {
+    $sudo_service = []
+  }
+
+  $extra_services = concat($autofs_service, $sudo_service)
+  $services       = concat($default_services, $extra_services)
+
+  $ldap_autofs_search_base_real = $ldap_autofs_search_base ? {
+    'UNSET' => "cn=automount,${ldap_base}",
+    default => $ldap_autofs_search_base,
+  }
+
+  $ldap_sudo_search_base_real = $ldap_sudo_search_base ? {
+    'UNSET' => "ou=sudoers,${ldap_base}",
+    default => $ldap_sudo_search_base,
+  }
 
   # Containment
-  anchor { 'sssd::begin': }
+  anchor { 'sssd::begin': }->
+  class { 'sssd::install': }->
+  class { 'sssd::config': }->
+  class { 'sssd::service': }->
   anchor { 'sssd::end': }
-
-  Anchor['sssd::begin'] ->
-  Class['sssd::install'] ->
-  Class['sssd::config'] ->
-  Class['sssd::service'] ->
-  Anchor['sssd::end']
 
 }
