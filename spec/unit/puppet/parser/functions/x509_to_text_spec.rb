@@ -15,7 +15,11 @@ describe "the x509_to_text function" do
 
   it "should convert $settings::localcacert file to a plain text certificate" do
     ca_file = tmpfilename('ca.pem')
-    cert = my_fixture_read('ca.crt')
+    if RUBY_PLATFORM =~ /darwin/
+      cert = my_fixture_read('ca.crt-osx')
+    else
+      cert = my_fixture_read('ca.crt-linux')
+    end
     File.open(ca_file, 'w') do |fh|
       fh.write(my_fixture_read('ca.pem'))
     end
