@@ -15,10 +15,11 @@ describe "the x509_to_text function" do
 
   it "should convert $settings::localcacert file to a plain text certificate" do
     ca_file = tmpfilename('ca.pem')
+    cert = my_fixture_read('ca.crt')
     File.open(ca_file, 'w') do |fh|
       fh.write(my_fixture_read('ca.pem'))
     end
     result = scope.function_x509_to_text([ca_file])
-    result.should == my_fixture_read('ca.crt')
+    result.should == cert
   end
 end
