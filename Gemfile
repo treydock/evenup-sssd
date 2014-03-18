@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 group :development, :test do
   gem 'rake'
   gem 'puppet-lint'
-  gem 'rspec-puppet'
+  gem 'rspec-puppet',           :require => false, :git => 'https://github.com/rodjek/rspec-puppet.git'
   gem 'puppetlabs_spec_helper'
   gem 'travis'
   gem 'travis-lint'

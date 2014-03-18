@@ -14,30 +14,24 @@
 #
 class sssd::install {
 
-  $package_ensure   = $sssd::package_ensure
-  $with_autofs      = $sssd::with_autofs
-  $with_sudo        = $sssd::with_sudo
-  $autofs_packages  = ['libsss_autofs', 'autofs']
-  $sudo_packages    = ['libsss_sudo']
-
   if $caller_module_name != $module_name {
     fail("Use of private class ${name} by ${caller_module_name}")
   }
 
   package { 'sssd':
-    ensure  => $package_ensure,
+    ensure  => $sssd::package_ensure,
   }
 
   package { 'sssd-client':
-    ensure  => $package_ensure,
+    ensure  => $sssd::package_ensure,
   }
 
-  if $with_autofs {
-    ensure_packages($autofs_packages)
+  if $sssd::with_autofs {
+    ensure_packages($sssd::params::autofs_packages)
   }
 
-  if $with_sudo {
-    ensure_packages($sudo_packages)
+  if $sssd::with_sudo {
+    ensure_packages($sssd::params::sudo_packages)
   }
 
 }

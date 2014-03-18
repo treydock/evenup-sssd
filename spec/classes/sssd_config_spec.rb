@@ -1,11 +1,33 @@
 require 'spec_helper'
 
-describe 'sssd::config', :type => :class do
+describe 'sssd::config' do
+  let(:facts) {{:osfamily => 'RedHat', :concat_basedir => '/var/lib/puppet/concat'}}
+
   let(:pre_condition) { "class { 'sssd': }" }
 
-  let(:facts) { { :concat_basedir => '/var/lib/puppet/concat' } }
-
   it { should create_class('sssd::config') }
+  it { should create_class('sssd') }
+
+  it { should_not contain_file('sssd_ldap_tls_cacert') }
+
+  it do
+    should contain_file('/etc/openldap/ldap.conf').with({
+      'ensure'  => 'file',
+      'owner'   => 'root',
+      'group'   => 'root',
+      'mode'    => '0644',
+    })
+  end
+
+  it do
+    content = catalogue.resource('file', '/etc/openldap/ldap.conf').send(:parameters)[:content]
+    content.split("\n").reject { |c| c =~ /(^#|^$)/ }.should == [
+      'URI ldap://ldap.example.org',
+      'BASE dc=example,dc=org',
+      'TLS_CACERT /etc/pki/tls/certs/ca-bundle.crt',
+      'TLS_REQCERT demand',
+    ]
+  end
 
   it do
     should contain_file('/etc/sssd/sssd.conf').with({
@@ -18,53 +40,7 @@ describe 'sssd::config', :type => :class do
   end
 
   it do
-    should contain_file('/etc/pam.d/password-auth').with({
-      'ensure'  => 'link',
-      'target'  => 'password-auth-ac',
-    })
-  end
-
-  it do
-    should contain_file('/etc/pam.d/password-auth-ac').with({
-      'ensure'  => 'file',
-      'owner'   => 'root',
-      'group'   => 'root',
-      'mode'    => '0444',
-    })
-  end
-
-  it do
-    should contain_file('/etc/pam.d/system-auth').with({
-      'ensure'  => 'link',
-      'target'  => 'system-auth-ac',
-    })
-  end
-
-  it do
-    should contain_file('/etc/pam.d/system-auth-ac').with({
-      'ensure'  => 'file',
-      'owner'   => 'root',
-      'group'   => 'root',
-      'mode'    => '0444',
-    })
-  end
-
-  it do
-    should contain_file('/etc/nsswitch.conf').with({
-      'ensure'  => 'file',
-      'owner'   => 'root',
-      'group'   => 'root',
-      'mode'    => '0444',
-    })
-  end
-
-  it { should_not contain_beaver__stanza('/var/log/sssd/sssd_LDAP.log') }
-  it { should_not contain_beaver__stanza('/var/log/sssd/sssd.log') }
-  it { should_not contain_beaver__stanza('/var/log/sssd/sssd_pam.log') }
-  it { should_not contain_beaver__stanza('/var/log/sssd/sssd_nss.log') }
-
-  it do
-    content = subject.resource('file', '/etc/sssd/sssd.conf').send(:parameters)[:content]
+    content = catalogue.resource('file', '/etc/sssd/sssd.conf').send(:parameters)[:content]
     content.split("\n").reject { |c| c =~ /(^#|^$)/ }.should == [
       '[sssd]',
       'config_file_version = 2',
@@ -119,7 +95,23 @@ describe 'sssd::config', :type => :class do
   it { should contain_file('/etc/sssd/sssd.conf').without_content(/^ldap_autofs_entry_value = automountInformation$/) }
 
   it do
-    verify_contents(subject, '/etc/pam.d/password-auth-ac', [
+    should contain_file('/etc/pam.d/password-auth').with({
+      'ensure'  => 'link',
+      'target'  => 'password-auth-ac',
+    })
+  end
+
+  it do
+    should contain_file('/etc/pam.d/password-auth-ac').with({
+      'ensure'  => 'file',
+      'owner'   => 'root',
+      'group'   => 'root',
+      'mode'    => '0444',
+    })
+  end
+
+  it do
+    verify_contents(catalogue, '/etc/pam.d/password-auth-ac', [
       'auth        required      pam_env.so',
       'auth        sufficient    pam_unix.so nullok try_first_pass',
       'auth        requisite     pam_succeed_if.so uid >= 500 quiet',
@@ -143,7 +135,23 @@ describe 'sssd::config', :type => :class do
   end
 
   it do
-    verify_contents(subject, '/etc/pam.d/system-auth-ac', [
+    should contain_file('/etc/pam.d/system-auth').with({
+      'ensure'  => 'link',
+      'target'  => 'system-auth-ac',
+    })
+  end
+
+  it do
+    should contain_file('/etc/pam.d/system-auth-ac').with({
+      'ensure'  => 'file',
+      'owner'   => 'root',
+      'group'   => 'root',
+      'mode'    => '0444',
+    })
+  end
+
+  it do
+    verify_contents(catalogue, '/etc/pam.d/system-auth-ac', [
       'auth        required      pam_env.so',
       'auth        sufficient    pam_unix.so nullok try_first_pass',
       'auth        requisite     pam_succeed_if.so uid >= 500 quiet',
@@ -167,76 +175,90 @@ describe 'sssd::config', :type => :class do
     ])
   end
 
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^passwd:     files sss$/) }
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^shadow:     files sss$/) }
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^group:      files sss$/) }
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^automount:  files$/) }
-  it { should contain_file('/etc/nsswitch.conf').with_content(/^sudoers:    files$/) }
+  it do
+    should contain_file('/etc/nsswitch.conf').with({
+      'ensure'  => 'file',
+      'owner'   => 'root',
+      'group'   => 'root',
+      'mode'    => '0444',
+    })
+  end
+
+  it { verify_contents(catalogue, '/etc/nsswitch.conf', ['passwd:     files sss']) }
+  it { verify_contents(catalogue, '/etc/nsswitch.conf', ['shadow:     files sss']) }
+  it { verify_contents(catalogue, '/etc/nsswitch.conf', ['group:      files sss']) }
+  it { verify_contents(catalogue, '/etc/nsswitch.conf', ['automount:  files']) }
+  it { verify_contents(catalogue, '/etc/nsswitch.conf', ['sudoers:    files']) }
+
+  it { should_not contain_beaver__stanza('/var/log/sssd/sssd_LDAP.log') }
+  it { should_not contain_beaver__stanza('/var/log/sssd/sssd.log') }
+  it { should_not contain_beaver__stanza('/var/log/sssd/sssd_pam.log') }
+  it { should_not contain_beaver__stanza('/var/log/sssd/sssd_nss.log') }
 
   context 'when setting filter_groups' do
     let(:pre_condition) { "class { 'sssd': filter_groups => 'foo,bar' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/filter_groups = foo,bar/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['filter_groups = foo,bar']) }
   end
 
   context 'when setting filter_users' do
     let(:pre_condition) { "class { 'sssd': filter_users => 'bob,john' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/filter_users = bob,john/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['filter_users = bob,john']) }
   end
 
   context 'when setting ldap_base' do
     let(:pre_condition) { "class { 'sssd': ldap_base => 'dc=company,dc=com' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_search_base = dc=company,dc=com/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_search_base = dc=company,dc=com']) }
   end
 
   context 'when setting ldap_uri' do
     let(:pre_condition) { "class { 'sssd': ldap_uri => 'ldap://ldap.company.com' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_uri = ldap:\/\/ldap.company.com/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_uri = ldap://ldap.company.com']) }
   end
 
   context 'when setting ldap_access_filter' do
     let(:pre_condition) { "class { 'sssd': ldap_access_filter => 'objectclass=posixaccount' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_access_filter = objectclass=posixaccount/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_access_filter = objectclass=posixaccount']) }
   end
 
   context 'when setting ldap_group_member' do
     let(:pre_condition) { "class { 'sssd': ldap_group_member => 'memberUid' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_group_member = memberUid/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_group_member = memberUid']) }
   end
 
   context 'when setting ldap_tls_reqcert' do
     let(:pre_condition) { "class { 'sssd': ldap_tls_reqcert => 'always' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_tls_reqcert = always/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_tls_reqcert = always']) }
   end
 
   context 'when setting ldap_tls_cacert' do
     let(:pre_condition) { "class { 'sssd': ldap_tls_cacert => '/tmp/cert' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/ldap_tls_cacert = \/tmp\/cert/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_tls_cacert = /tmp/cert']) }
   end
 
   context 'when setting ldap_schema' do
     let(:pre_condition) { "class { 'sssd': ldap_schema => 'rfc2307bis' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_schema = rfc2307bis$/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_schema = rfc2307bis']) }
   end
 
   context 'when setting ldap_pwd_policy' do
     let(:pre_condition) { "class { 'sssd': ldap_pwd_policy => 'none' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_pwd_policy = none$/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_pwd_policy = none']) }
   end
 
   context 'when setting ldap_account_expire_policy' do
     let(:pre_condition) { "class { 'sssd': ldap_account_expire_policy => '389ds' }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_account_expire_policy = 389ds$/) }
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_account_expire_policy = 389ds']) }
   end
 
   context 'when logsagent => beaver' do
@@ -257,42 +279,79 @@ describe 'sssd::config', :type => :class do
   context 'when with_autofs => true' do
     let(:pre_condition) { "class { 'sssd': with_autofs => true }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^services = nss,pam,autofs$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^\[autofs\]$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^autofs_provider = ldap$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_search_base = cn=automount,dc=example,dc=org$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_map_object_class = automountMap$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_entry_object_class = automount$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_map_name = ou$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_entry_key = cn$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_entry_value = automountInformation$/) }
-    it { should contain_file('/etc/nsswitch.conf').with_content(/^automount:  files sss$/)}
+    it do
+      verify_contents(catalogue, '/etc/sssd/sssd.conf', [
+        'services = nss,pam,autofs',
+        '[autofs]',
+        'autofs_provider = ldap',
+        'ldap_autofs_search_base = cn=automount,dc=example,dc=org',
+        'ldap_autofs_map_object_class = automountMap',
+        'ldap_autofs_entry_object_class = automount',
+        'ldap_autofs_map_name = ou',
+        'ldap_autofs_entry_key = cn',
+        'ldap_autofs_entry_value = automountInformation',
+      ])
+    end
+
+    it { verify_contents(catalogue, '/etc/nsswitch.conf', ['automount:  files sss']) }
 
     context 'when ldap_autofs_search_base => cn=automount,dc=company,dc=com' do
       let(:pre_condition) { "class { 'sssd': with_autofs => true, ldap_autofs_search_base => 'cn=automount,dc=company,dc=com' }" }
 
-      it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_autofs_search_base = cn=automount,dc=company,dc=com$/) }
+      it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_autofs_search_base = cn=automount,dc=company,dc=com']) }
     end
   end
 
   context 'when with_sudo => true' do
     let(:pre_condition) { "class { 'sssd': with_sudo => true }" }
 
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^services = nss,pam,sudo$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^\[sudo\]$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^sudo_provider = ldap$/) }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_sudo_search_base = ou=sudoers,dc=example,dc=org$/) }
-    it { should contain_file('/etc/nsswitch.conf').with_content(/^sudoers:    files sss$/)}
+    it do
+      verify_contents(catalogue, '/etc/sssd/sssd.conf', [
+        'services = nss,pam,sudo',
+        '[sudo]',
+        'sudo_provider = ldap',
+        'ldap_sudo_search_base = ou=sudoers,dc=example,dc=org',
+      ])
+    end
+
+    it { verify_contents(catalogue, '/etc/nsswitch.conf', ['sudoers:    files sss']) }
 
     context 'when ldap_sudo_search_base => ou=sudoers,dc=company,dc=com' do
       let(:pre_condition) { "class { 'sssd': with_sudo => true, ldap_sudo_search_base => 'ou=sudoers,dc=company,dc=com' }" }
 
-      it { should contain_file('/etc/sssd/sssd.conf').with_content(/^ldap_sudo_search_base = ou=sudoers,dc=company,dc=com$/) }
+      it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_sudo_search_base = ou=sudoers,dc=company,dc=com']) }
     end
   end
 
   context 'when with_autofs => true and with_sudo => true' do
     let(:pre_condition) { "class { 'sssd': with_autofs => true, with_sudo => true }" }
-    it { should contain_file('/etc/sssd/sssd.conf').with_content(/^services = nss,pam,autofs,sudo$/) }
+
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['services = nss,pam,autofs,sudo']) }
+  end
+
+  context 'when use_puppet_certs => true' do
+    let(:pre_condition) { "class { 'sssd': use_puppet_certs => true }" }
+
+    before(:each) do
+      ca_file = tmpfilename('ca.pem')
+      File.open(ca_file, 'w') do |fh|
+        fh.write(my_fixture_read('ca.pem'))
+      end
+      Puppet.settings[:localcacert] = ca_file
+    end
+
+    it do
+      should contain_file('sssd_ldap_tls_cacert').with({
+        'ensure'  => 'present',
+        'path'    => '/etc/pki/tls/certs/puppet-ca.crt',
+        'owner'   => 'root',
+        'group'   => 'root',
+        'mode'    => '0644',
+      })
+    end
+
+    it do
+      verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_tls_cacert = /etc/pki/tls/certs/puppet-ca.crt'])
+    end
   end
 end

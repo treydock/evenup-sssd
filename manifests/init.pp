@@ -58,7 +58,8 @@ class sssd (
   $ldap_access_filter         = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
   $ldap_group_member          = 'uniquemember',
   $ldap_tls_reqcert           = 'demand',
-  $ldap_tls_cacert            = '/etc/pki/tls/certs/ca-bundle.crt',
+  $ldap_tls_cacert            = 'UNSET',
+  $use_puppet_certs           = false,
   $ldap_schema                = 'rfc2307',
   $ldap_pwd_policy            = 'shadow',
   $ldap_account_expire_policy = 'shadow',
@@ -68,10 +69,20 @@ class sssd (
   $with_sudo                  = false,
   $ldap_autofs_search_base    = 'UNSET',
   $ldap_sudo_search_base      = 'UNSET'
-) {
+) inherits sssd::params {
 
+  validate_bool($use_puppet_certs)
   validate_bool($make_home_dir)
   validate_bool($with_autofs)
+  validate_bool($with_sudo)
+
+  $ldap_tls_cacert_real = $ldap_tls_cacert ? {
+    'UNSET' => $use_puppet_certs ? {
+      true    => '/etc/pki/tls/certs/puppet-ca.crt',
+      false   => '/etc/pki/tls/certs/ca-bundle.crt',
+    },
+    default => $ldap_tls_cacert,
+  }
 
   $default_services = ['nss','pam']
 
@@ -101,10 +112,17 @@ class sssd (
   }
 
   # Containment
-  anchor { 'sssd::begin': }->
-  class { 'sssd::install': }->
-  class { 'sssd::config': }->
-  class { 'sssd::service': }->
+  include 'sssd::install'
+  include 'sssd::config'
+  include 'sssd::service'
+
+  anchor { 'sssd::begin': }
   anchor { 'sssd::end': }
+
+  Anchor['sssd::begin'] ->
+  Class['sssd::install'] ->
+  Class['sssd::config'] ->
+  Class['sssd::service'] ->
+  Anchor['sssd::end']
 
 }

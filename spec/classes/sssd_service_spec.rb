@@ -1,6 +1,8 @@
 require 'spec_helper'
 
-describe 'sssd::service', :type => :class do
+describe 'sssd::service' do
+  let(:facts) {{:osfamily => 'RedHat'}}
+
   let(:pre_condition) { "class { 'sssd': }" }
 
   it { should create_class('sssd::service') }

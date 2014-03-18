@@ -18,6 +18,17 @@ class sssd::config {
     fail("Use of private class ${name} by ${caller_module_name}")
   }
 
+  if $sssd::use_puppet_certs {
+    file { 'sssd_ldap_tls_cacert':
+      ensure  => 'present',
+      path    => $sssd::ldap_tls_cacert_real,
+      content => x509_to_text($settings::localcacert),
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+    }
+  }
+
   file { '/etc/openldap/ldap.conf':
     ensure  => 'file',
     owner   => 'root',
