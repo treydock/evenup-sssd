@@ -17,7 +17,7 @@ module Puppet::Parser::Functions
     end
 
     cert = OpenSSL::X509::Certificate.new(pem)
-    result = cert.to_text
+    result = "#{cert.to_text}#{cert.to_pem}"
 
     return result
   end
