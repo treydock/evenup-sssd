@@ -8,6 +8,8 @@ group :development, :test do
   gem 'travis'
   gem 'travis-lint'
   gem 'puppet-syntax'
+  gem 'simplecov',              :require => false
+  gem 'coveralls',              :require => false
 end
 
 group :development do
