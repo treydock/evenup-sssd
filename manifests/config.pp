@@ -80,6 +80,16 @@ class sssd::config {
     content => template('sssd/nsswitch.conf.erb'),
   }
 
+  if $sssd::with_autofs {
+    file { '/etc/autofs_ldap_auth.conf':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0600',
+      content => template('sssd/autofs_ldap_auth.conf.erb'),
+    }
+  }
+
   case $sssd::logsagent {
     'beaver': {
       beaver::stanza { '/var/log/sssd/sssd_LDAP.log':

@@ -24,4 +24,15 @@ class sssd::service {
     hasstatus   => true,
     hasrestart  => true,
   }
+
+  if $sssd::with_autofs {
+    service { 'autofs':
+      ensure      => 'running',
+      enable      => true,
+      hasstatus   => true,
+      hasrestart  => true,
+      require     => Service['sssd'],
+      subscribe   => [File['/etc/autofs_ldap_auth.conf'], File['/etc/sssd/sssd.conf']],
+    }
+  }
 }

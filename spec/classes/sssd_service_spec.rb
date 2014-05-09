@@ -15,4 +15,19 @@ describe 'sssd::service' do
       'hasrestart'  => 'true',
     })
   end
+
+  context 'when with_autofs => true' do
+    let(:pre_condition) { "class { 'sssd': with_autofs => true }" }
+
+    it do
+      should contain_service('autofs').with({
+        'ensure'      => 'running',
+        'enable'      => 'true',
+        'hasstatus'   => 'true',
+        'hasrestart'  => 'true',
+        'require'     => 'Service[sssd]',
+        'subscribe'   => ['File[/etc/autofs_ldap_auth.conf]', 'File[/etc/sssd/sssd.conf]'],
+      })
+    end
+  end
 end

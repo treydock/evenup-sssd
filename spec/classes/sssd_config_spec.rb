@@ -190,6 +190,8 @@ describe 'sssd::config' do
   it { verify_contents(catalogue, '/etc/nsswitch.conf', ['automount:  files']) }
   it { verify_contents(catalogue, '/etc/nsswitch.conf', ['sudoers:    files']) }
 
+  it { should_not contain_file('/etc/autofs_ldap_auth.conf') }
+
   it { should_not contain_beaver__stanza('/var/log/sssd/sssd_LDAP.log') }
   it { should_not contain_beaver__stanza('/var/log/sssd/sssd.log') }
   it { should_not contain_beaver__stanza('/var/log/sssd/sssd_pam.log') }
@@ -295,10 +297,47 @@ describe 'sssd::config' do
 
     it { verify_contents(catalogue, '/etc/nsswitch.conf', ['automount:  files sss']) }
 
+    it do
+      should contain_file('/etc/autofs_ldap_auth.conf').with({
+        'ensure'  => 'file',
+        'owner'   => 'root',
+        'group'   => 'root',
+        'mode'    => '0600',
+      })
+    end
+
+    it do
+      verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', [
+        '<autofs_ldap_sasl_conf',
+        '	usetls="yes"',
+        '	tlsrequired="yes"',
+        '	authrequired="no"',
+        '/>',
+      ])
+    end
+
     context 'when ldap_autofs_search_base => cn=automount,dc=company,dc=com' do
       let(:pre_condition) { "class { 'sssd': with_autofs => true, ldap_autofs_search_base => 'cn=automount,dc=company,dc=com' }" }
 
       it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_autofs_search_base = cn=automount,dc=company,dc=com']) }
+    end
+
+    context 'when autofs_usetls => "no"' do
+      let(:pre_condition) { "class { 'sssd': with_autofs => true, autofs_usetls => 'no' }" }
+
+      it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	usetls="no"']) }
+    end
+
+    context 'when autofs_tlsrequired => "no"' do
+      let(:pre_condition) { "class { 'sssd': with_autofs => true, autofs_tlsrequired => 'no' }" }
+
+      it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	tlsrequired="no"']) }
+    end
+
+    context 'when autofs_authrequired => "yes"' do
+      let(:pre_condition) { "class { 'sssd': with_autofs => true, autofs_authrequired => 'yes' }" }
+
+      it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	authrequired="yes"']) }
     end
   end
 

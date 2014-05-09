@@ -68,6 +68,9 @@ class sssd (
   $with_autofs                = false,
   $with_sudo                  = false,
   $ldap_autofs_search_base    = 'UNSET',
+  $autofs_usetls              = 'yes',
+  $autofs_tlsrequired         = 'yes',
+  $autofs_authrequired        = 'no',
   $ldap_sudo_search_base      = 'UNSET'
 ) inherits sssd::params {
 
