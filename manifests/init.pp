@@ -71,13 +71,15 @@ class sssd (
   $autofs_usetls              = 'yes',
   $autofs_tlsrequired         = 'yes',
   $autofs_authrequired        = 'no',
-  $ldap_sudo_search_base      = 'UNSET'
+  $ldap_sudo_search_base      = 'UNSET',
+  $manage_pam_config          = true,
 ) inherits sssd::params {
 
   validate_bool($use_puppet_certs)
   validate_bool($make_home_dir)
   validate_bool($with_autofs)
   validate_bool($with_sudo)
+  validate_bool($manage_pam_config)
 
   $ldap_tls_cacert_real = $ldap_tls_cacert ? {
     'UNSET' => $use_puppet_certs ? {

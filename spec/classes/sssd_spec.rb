@@ -19,6 +19,7 @@ describe 'sssd' do
     'make_home_dir',
     'with_autofs',
     'with_sudo',
+    'manage_pam_config',
   ].each do |param|
     context "with #{param} => 'foo'" do
       let(:params) {{ param.to_sym => 'foo' }}

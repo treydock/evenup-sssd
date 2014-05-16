@@ -393,4 +393,12 @@ describe 'sssd::config' do
       verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_tls_cacert = /etc/pki/tls/certs/puppet-ca.crt'])
     end
   end
+
+  context 'when manage_pam_config => false' do
+    let(:pre_condition) { "class { 'sssd': manage_pam_config => false }" }
+    it { should_not contain_file('/etc/pam.d/password-auth') }
+    it { should_not contain_file('/etc/pam.d/password-auth-ac') }
+    it { should_not contain_file('/etc/pam.d/system-auth') }
+    it { should_not contain_file('/etc/pam.d/system-auth-ac') }
+  end
 end

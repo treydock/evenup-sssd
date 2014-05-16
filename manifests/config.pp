@@ -46,30 +46,32 @@ class sssd::config {
     content => template('sssd/sssd.conf.erb'),
   }
 
-  file { '/etc/pam.d/password-auth':
-    ensure  => link,
-    target  => 'password-auth-ac',
-  }
+  if $sssd::manage_pam_config {
+    file { '/etc/pam.d/password-auth':
+      ensure  => link,
+      target  => 'password-auth-ac',
+    }
 
-  file { '/etc/pam.d/password-auth-ac':
-    ensure  => file,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0444',
-    content => template('sssd/password-auth-ac.erb'),
-  }
+    file { '/etc/pam.d/password-auth-ac':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0444',
+      content => template('sssd/password-auth-ac.erb'),
+    }
 
-  file { '/etc/pam.d/system-auth':
-    ensure  => link,
-    target  => 'system-auth-ac',
-  }
+    file { '/etc/pam.d/system-auth':
+      ensure  => link,
+      target  => 'system-auth-ac',
+    }
 
-  file { '/etc/pam.d/system-auth-ac':
-    ensure  => file,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0444',
-    content => template('sssd/system-auth-ac.erb'),
+    file { '/etc/pam.d/system-auth-ac':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0444',
+      content => template('sssd/system-auth-ac.erb'),
+    }
   }
 
   file { '/etc/nsswitch.conf':
