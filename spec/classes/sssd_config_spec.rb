@@ -386,6 +386,7 @@ describe 'sssd::config' do
         'owner'   => 'root',
         'group'   => 'root',
         'mode'    => '0644',
+        'notify'  => 'Service[sssd]',
       })
     end
 
