@@ -8,14 +8,14 @@ begin
   SimpleCov.start do
     add_filter '/spec/'
   end
-
-  at_exit { RSpec::Puppet::Coverage.report! }
 rescue Exception => e
   warn "Coveralls disabled"
 end
 
 RSpec.configure do |c|
   c.include PuppetlabsSpec::Files
+
+  c.mock_with :mocha
 end
 
 at_exit { RSpec::Puppet::Coverage.report! }

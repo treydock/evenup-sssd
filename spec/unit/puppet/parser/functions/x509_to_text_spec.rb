@@ -26,4 +26,9 @@ describe "the x509_to_text function" do
     result = scope.function_x509_to_text([ca_file])
     result.should == cert
   end
+
+  it "should raise a ParseError if file does not exist" do
+    File.stubs(:read).with('/foo/bar') { raise Errno::ENOENT }
+    expect { scope.function_x509_to_text(['/foo/bar']) }.to raise_error(Puppet::ParseError)
+  end
 end

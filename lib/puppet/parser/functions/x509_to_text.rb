@@ -11,7 +11,7 @@ module Puppet::Parser::Functions
     file = args[0]
 
     begin
-      pem = File::read(file)
+      pem = File.read(file)
     rescue Errno::ENOENT
       raise Puppet::ParseError, ("x509_to_text(): File not found (#{file})")
     end
