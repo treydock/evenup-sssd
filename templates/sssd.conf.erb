@@ -18,13 +18,18 @@ debug_level = 0x02F0
 reconnection_retries = 3
 offline_credentials_expiration = 0
 
-<% if @with_autofs -%>
+<% if @services.include?('autofs') -%>
 [autofs]
 
 <% end -%>
 
-<% if @with_sudo -%>
+<% if @services.include?('sudo') -%>
 [sudo]
+
+<% end -%>
+
+<% if @services.include?('ssh') -%>
+[ssh]
 
 <% end -%>
 
@@ -38,10 +43,10 @@ id_provider = ldap
 auth_provider = ldap
 chpass_provider = ldap
 access_provider = ldap
-<% if @with_autofs -%>
+<% if @services.include?('autofs') -%>
 autofs_provider = ldap
 <% end -%>
-<% if @with_sudo -%>
+<% if @services.include?('sudo') -%>
 sudo_provider = ldap
 <% end -%>
 
@@ -60,7 +65,7 @@ ldap_pwd_policy = <%= @ldap_pwd_policy %>
 ldap_account_expire_policy = <%= @ldap_account_expire_policy %>
 ldap_access_order = filter,expire
 ldap_access_filter = <%= @ldap_access_filter %>
-<% if @with_autofs -%>
+<% if @services.include?('autofs') -%>
 ldap_autofs_search_base = <%= @ldap_autofs_search_base_real %>
 ldap_autofs_map_object_class = automountMap
 ldap_autofs_entry_object_class = automount
@@ -68,6 +73,6 @@ ldap_autofs_map_name = ou
 ldap_autofs_entry_key = cn
 ldap_autofs_entry_value = automountInformation
 <% end -%>
-<% if @with_sudo -%>
+<% if @services.include?('sudo') -%>
 ldap_sudo_search_base = <%= @ldap_sudo_search_base_real %>
 <% end -%>

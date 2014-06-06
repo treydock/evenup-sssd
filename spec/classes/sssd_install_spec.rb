@@ -21,18 +21,18 @@ describe 'sssd::install' do
     it { should contain_package('sssd-client').with_ensure('installed') }
   end
 
-  context "when with_autofs => true" do
+  context "when services => ['nss','pam','autofs']" do
     let :pre_condition do
-      "class { 'sssd': with_autofs => true }"
+      "class { 'sssd': services => ['nss','pam','autofs'] }"
     end
 
     it { should contain_package('libsss_autofs').with_ensure('present') }
     it { should contain_package('autofs').with_ensure('present') }
   end
 
-  context "when with_sudo => true" do
+  context "when services => ['nss','pam','sudo']" do
     let :pre_condition do
-      "class { 'sssd': with_sudo => true }"
+      "class { 'sssd': services => ['nss','pam','sudo'] }"
     end
 
     it { should contain_package('libsss_sudo').with_ensure('present') }

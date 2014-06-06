@@ -278,8 +278,8 @@ describe 'sssd::config' do
     it { should contain_file('/etc/pam.d/system-auth-ac').without_content(/.*pam_mkhomedir.so.*/) }
   end
 
-  context 'when with_autofs => true' do
-    let(:pre_condition) { "class { 'sssd': with_autofs => true }" }
+  context "when services => ['nss','pam','autofs']" do
+    let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'] }" }
 
     it do
       verify_contents(catalogue, '/etc/sssd/sssd.conf', [
@@ -317,32 +317,32 @@ describe 'sssd::config' do
     end
 
     context 'when ldap_autofs_search_base => cn=automount,dc=company,dc=com' do
-      let(:pre_condition) { "class { 'sssd': with_autofs => true, ldap_autofs_search_base => 'cn=automount,dc=company,dc=com' }" }
+      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'], ldap_autofs_search_base => 'cn=automount,dc=company,dc=com' }" }
 
       it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_autofs_search_base = cn=automount,dc=company,dc=com']) }
     end
 
     context 'when autofs_usetls => "no"' do
-      let(:pre_condition) { "class { 'sssd': with_autofs => true, autofs_usetls => 'no' }" }
+      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'], autofs_usetls => 'no' }" }
 
       it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	usetls="no"']) }
     end
 
     context 'when autofs_tlsrequired => "no"' do
-      let(:pre_condition) { "class { 'sssd': with_autofs => true, autofs_tlsrequired => 'no' }" }
+      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'], autofs_tlsrequired => 'no' }" }
 
       it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	tlsrequired="no"']) }
     end
 
     context 'when autofs_authrequired => "yes"' do
-      let(:pre_condition) { "class { 'sssd': with_autofs => true, autofs_authrequired => 'yes' }" }
+      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'], autofs_authrequired => 'yes' }" }
 
       it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	authrequired="yes"']) }
     end
   end
 
-  context 'when with_sudo => true' do
-    let(:pre_condition) { "class { 'sssd': with_sudo => true }" }
+  context "when services => ['nss','pam','sudo']" do
+    let(:pre_condition) { "class { 'sssd': services => ['nss','pam','sudo'] }" }
 
     it do
       verify_contents(catalogue, '/etc/sssd/sssd.conf', [
@@ -356,14 +356,14 @@ describe 'sssd::config' do
     it { verify_contents(catalogue, '/etc/nsswitch.conf', ['sudoers:    files sss']) }
 
     context 'when ldap_sudo_search_base => ou=sudoers,dc=company,dc=com' do
-      let(:pre_condition) { "class { 'sssd': with_sudo => true, ldap_sudo_search_base => 'ou=sudoers,dc=company,dc=com' }" }
+      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','sudo'], ldap_sudo_search_base => 'ou=sudoers,dc=company,dc=com' }" }
 
       it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_sudo_search_base = ou=sudoers,dc=company,dc=com']) }
     end
   end
 
-  context 'when with_autofs => true and with_sudo => true' do
-    let(:pre_condition) { "class { 'sssd': with_autofs => true, with_sudo => true }" }
+  context "when services => ['nss','pam','autofs','sudo']" do
+    let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs','sudo'] }" }
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['services = nss,pam,autofs,sudo']) }
   end

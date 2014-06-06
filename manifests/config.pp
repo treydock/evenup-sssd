@@ -83,7 +83,7 @@ class sssd::config {
     content => template('sssd/nsswitch.conf.erb'),
   }
 
-  if $sssd::with_autofs {
+  if member($sssd::services, 'autofs') {
     file { '/etc/autofs_ldap_auth.conf':
       ensure  => file,
       owner   => 'root',

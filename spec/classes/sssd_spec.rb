@@ -17,13 +17,21 @@ describe 'sssd' do
   [
     'use_puppet_certs',
     'make_home_dir',
-    'with_autofs',
-    'with_sudo',
     'manage_pam_config',
   ].each do |param|
     context "with #{param} => 'foo'" do
       let(:params) {{ param.to_sym => 'foo' }}
       it { expect { should create_class('sssd') }.to raise_error(Puppet::Error, /is not a boolean/) }
+    end
+  end
+
+  # Test array validation
+  [
+    'services',
+  ].each do |param|
+    context "with #{param} => 'foo'" do
+      let(:params) {{ param.to_sym => 'foo' }}
+      it { expect { should create_class('sssd') }.to raise_error(Puppet::Error, /is not an Array/) }
     end
   end
 end

@@ -26,11 +26,11 @@ class sssd::install {
     ensure  => $sssd::package_ensure,
   }
 
-  if $sssd::with_autofs {
+  if member($sssd::services, 'autofs') {
     ensure_packages($sssd::params::autofs_packages)
   }
 
-  if $sssd::with_sudo {
+  if member($sssd::services, 'sudo') {
     ensure_packages($sssd::params::sudo_packages)
   }
 

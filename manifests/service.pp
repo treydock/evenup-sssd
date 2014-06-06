@@ -25,7 +25,7 @@ class sssd::service {
     hasrestart  => true,
   }
 
-  if $sssd::with_autofs {
+  if member($sssd::services, 'autofs') {
     service { 'autofs':
       ensure      => 'running',
       enable      => true,

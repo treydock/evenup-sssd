@@ -16,8 +16,8 @@ describe 'sssd::service' do
     })
   end
 
-  context 'when with_autofs => true' do
-    let(:pre_condition) { "class { 'sssd': with_autofs => true }" }
+  context "when services => ['nss','pam','autofs']" do
+    let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'] }" }
 
     it do
       should contain_service('autofs').with({

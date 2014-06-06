@@ -51,6 +51,7 @@
 #
 class sssd (
   $package_ensure             = 'latest',
+  $services                   = ['nss','pam'],
   $filter_groups              = 'root,wheel',
   $filter_users               = 'root',
   $ldap_base                  = 'dc=example,dc=org',
@@ -65,8 +66,6 @@ class sssd (
   $ldap_account_expire_policy = 'shadow',
   $logsagent                  = '',
   $make_home_dir              = true,
-  $with_autofs                = false,
-  $with_sudo                  = false,
   $ldap_autofs_search_base    = 'UNSET',
   $autofs_usetls              = 'yes',
   $autofs_tlsrequired         = 'yes',
@@ -75,10 +74,9 @@ class sssd (
   $manage_pam_config          = true,
 ) inherits sssd::params {
 
+  validate_array($services)
   validate_bool($use_puppet_certs)
   validate_bool($make_home_dir)
-  validate_bool($with_autofs)
-  validate_bool($with_sudo)
   validate_bool($manage_pam_config)
 
   $ldap_tls_cacert_real = $ldap_tls_cacert ? {
@@ -88,23 +86,6 @@ class sssd (
     },
     default => $ldap_tls_cacert,
   }
-
-  $default_services = ['nss','pam']
-
-  if $with_autofs {
-    $autofs_service = ['autofs']
-  } else {
-    $autofs_service = []
-  }
-
-  if $with_sudo {
-    $sudo_service = ['sudo']
-  } else {
-    $sudo_service = []
-  }
-
-  $extra_services = concat($autofs_service, $sudo_service)
-  $services       = concat($default_services, $extra_services)
 
   $ldap_autofs_search_base_real = $ldap_autofs_search_base ? {
     'UNSET' => "cn=automount,${ldap_base}",
