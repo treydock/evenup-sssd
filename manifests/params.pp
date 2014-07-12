@@ -14,8 +14,13 @@ class sssd::params {
 
   case $::osfamily {
     'RedHat': {
-      $autofs_packages  = ['libsss_autofs', 'autofs']
-      $sudo_packages    = ['libsss_sudo']
+      if versioncmp($::operatingsystemrelease, '7.0') >= 0 {
+        $autofs_packages  = ['autofs']
+        $sudo_packages    = []
+      } else {
+        $autofs_packages  = ['libsss_autofs', 'autofs']
+        $sudo_packages    = ['libsss_sudo']
+      }
     }
 
     default: {

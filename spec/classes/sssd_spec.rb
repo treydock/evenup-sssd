@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'sssd' do
-  let(:facts) {{:osfamily => 'RedHat'}}
+  let(:facts) {{:osfamily => 'RedHat', :operatingsystemrelease => '6.5'}}
 
   it { should create_class('sssd') }
   it { should contain_class('sssd::params') }

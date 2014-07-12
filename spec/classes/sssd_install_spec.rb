@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'sssd::install' do
-  let(:facts) {{:osfamily => 'RedHat'}}
+  let(:facts) {{:osfamily => 'RedHat', :operatingsystemrelease => '6.5'}}
 
   let(:pre_condition) { "class { 'sssd': }" }
 
@@ -28,6 +28,12 @@ describe 'sssd::install' do
 
     it { should contain_package('libsss_autofs').with_ensure('present') }
     it { should contain_package('autofs').with_ensure('present') }
+
+    context "when operatingsystemrelease => '7.0.1406'" do
+      let(:facts) {{:osfamily => 'RedHat', :operatingsystemrelease => '7.0.1406'}}
+      it { should_not contain_package('libsss_autofs') }     
+      it { should contain_package('autofs').with_ensure('present') }
+    end
   end
 
   context "when services => ['nss','pam','sudo']" do
@@ -36,6 +42,11 @@ describe 'sssd::install' do
     end
 
     it { should contain_package('libsss_sudo').with_ensure('present') }
+
+    context "when operatingsystemrelease => '7.0.1406'" do
+      let(:facts) {{:osfamily => 'RedHat', :operatingsystemrelease => '7.0.1406'}}
+      it { should_not contain_package('libsss_sudo') }     
+    end
   end
 end
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'sssd::config' do
-  let(:facts) {{:osfamily => 'RedHat', :concat_basedir => '/var/lib/puppet/concat'}}
+  let(:facts) {{:osfamily => 'RedHat', :operatingsystemrelease => '6.5', :concat_basedir => '/var/lib/puppet/concat'}}
 
   let(:pre_condition) { "class { 'sssd': }" }
 

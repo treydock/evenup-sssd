@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'sssd::service' do
-  let(:facts) {{:osfamily => 'RedHat'}}
+  let(:facts) {{:osfamily => 'RedHat', :operatingsystemrelease => '6.5'}}
 
   let(:pre_condition) { "class { 'sssd': }" }
 
