@@ -79,6 +79,11 @@ class sssd (
   validate_bool($make_home_dir)
   validate_bool($manage_pam_config)
 
+  $ldap_uri_array = is_string($ldap_uri) ? {
+    true    => split($ldap_uri, ','),
+    default => $ldap_uri,
+  }
+
   $ldap_tls_cacert_real = $ldap_tls_cacert ? {
     'UNSET' => $use_puppet_certs ? {
       true    => '/etc/pki/tls/certs/puppet-ca.crt',

@@ -15,7 +15,6 @@ end
 
 group :development do
   gem 'beaker-rspec',           :require => false
-  gem 'vagrant-wrapper',        :require => false
 end
 
 gem 'puppet', ENV['PUPPET_VERSION'] || '~> 3.6.0'

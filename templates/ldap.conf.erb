@@ -7,7 +7,7 @@
 #TIMELIMIT	15
 #DEREF		never
 
-URI <%= @ldap_uri %>
+URI <%= @ldap_uri_array.join(' ') %>
 BASE <%= @ldap_base %>
 TLS_CACERT <%= @ldap_tls_cacert_real %>
 TLS_REQCERT <%= @ldap_tls_reqcert %>

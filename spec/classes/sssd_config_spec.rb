@@ -219,6 +219,21 @@ describe 'sssd::config' do
     let(:pre_condition) { "class { 'sssd': ldap_uri => 'ldap://ldap.company.com' }" }
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_uri = ldap://ldap.company.com']) }
+    it { verify_contents(catalogue, '/etc/openldap/ldap.conf', ['URI ldap://ldap.company.com']) }
+  end
+
+  context 'when setting ldap_uri Array' do
+    let(:pre_condition) { "class { 'sssd': ldap_uri => ['ldap://ldap.company.com', 'ldap://ldap2.company.com'] }" }
+
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_uri = ldap://ldap.company.com,ldap://ldap2.company.com']) }
+    it { verify_contents(catalogue, '/etc/openldap/ldap.conf', ['URI ldap://ldap.company.com ldap://ldap2.company.com']) }
+  end
+
+  context 'when setting ldap_uri comma separated string' do
+    let(:pre_condition) { "class { 'sssd': ldap_uri => 'ldap://ldap.company.com,ldap://ldap2.company.com' }" }
+
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_uri = ldap://ldap.company.com,ldap://ldap2.company.com']) }
+    it { verify_contents(catalogue, '/etc/openldap/ldap.conf', ['URI ldap://ldap.company.com ldap://ldap2.company.com']) }
   end
 
   context 'when setting ldap_access_filter' do

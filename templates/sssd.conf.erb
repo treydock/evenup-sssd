@@ -50,7 +50,7 @@ autofs_provider = ldap
 sudo_provider = ldap
 <% end -%>
 
-ldap_uri = <%= @ldap_uri %>
+ldap_uri = <%= @ldap_uri_array.join(',') %>
 ldap_search_base = <%= @ldap_base %>
 ldap_network_timeout = 3
 ldap_tls_reqcert = <%= @ldap_tls_reqcert %>
