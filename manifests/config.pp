@@ -75,12 +75,14 @@ class sssd::config {
     }
   }
 
-  file { '/etc/nsswitch.conf':
-    ensure  => file,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0444',
-    content => template('sssd/nsswitch.conf.erb'),
+  if $sssd::manage_nsswitch {
+    file { '/etc/nsswitch.conf':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0444',
+      content => template('sssd/nsswitch.conf.erb'),
+    }
   }
 
   if member($sssd::services, 'autofs') {

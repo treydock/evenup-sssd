@@ -18,6 +18,7 @@ describe 'sssd' do
     'use_puppet_certs',
     'make_home_dir',
     'manage_pam_config',
+    'manage_nsswitch',
   ].each do |param|
     context "with #{param} => 'foo'" do
       let(:params) {{ param.to_sym => 'foo' }}

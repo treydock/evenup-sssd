@@ -417,4 +417,9 @@ describe 'sssd::config' do
     it { should_not contain_file('/etc/pam.d/system-auth') }
     it { should_not contain_file('/etc/pam.d/system-auth-ac') }
   end
+
+  context 'when manage_nsswitch => false' do
+    let(:pre_condition) { "class { 'sssd': manage_nsswitch => false }" }
+    it { should_not contain_file('/etc/nsswitch.conf') }
+  end
 end
