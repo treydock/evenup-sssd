@@ -62,7 +62,7 @@ describe 'sssd::config' do
       'debug_level = 0x02F0',
       'cache_credentials = TRUE',
       'entry_cache_timeout = 6000',
-      'enumerate = TRUE',
+      'enumerate = FALSE',
       'id_provider = ldap',
       'auth_provider = ldap',
       'chpass_provider = ldap',
@@ -207,6 +207,12 @@ describe 'sssd::config' do
     let(:pre_condition) { "class { 'sssd': filter_users => 'bob,john' }" }
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['filter_users = bob,john']) }
+  end
+
+  context 'when setting ldap_enumerate' do
+    let(:pre_condition) { "class { 'sssd': ldap_enumerate => true }" }
+
+    it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['enumerate = TRUE']) }
   end
 
   context 'when setting ldap_base' do

@@ -37,7 +37,7 @@ offline_credentials_expiration = 0
 debug_level = 0x02F0
 cache_credentials = TRUE
 entry_cache_timeout = 6000
-enumerate = TRUE
+enumerate = <%= @ldap_enumerate ? 'TRUE' : 'FALSE' %>
 
 id_provider = ldap
 auth_provider = ldap

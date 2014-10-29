@@ -15,6 +15,7 @@ describe 'sssd' do
 
   # Test boolean validation
   [
+    'ldap_enumerate',
     'use_puppet_certs',
     'make_home_dir',
     'manage_pam_config',

@@ -54,6 +54,7 @@ class sssd (
   $services                   = ['nss','pam'],
   $filter_groups              = 'root,wheel',
   $filter_users               = 'root',
+  $ldap_enumerate             = false,
   $ldap_base                  = 'dc=example,dc=org',
   $ldap_uri                   = 'ldap://ldap.example.org',
   $ldap_access_filter         = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
@@ -76,6 +77,7 @@ class sssd (
 ) inherits sssd::params {
 
   validate_array($services)
+  validate_bool($ldap_enumerate)
   validate_bool($use_puppet_certs)
   validate_bool($make_home_dir)
   validate_bool($manage_pam_config)
