@@ -1,7 +1,16 @@
-require 'rubygems'
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
+
+task :default do
+  sh %{rake -T}
+end
+
+desc "Run syntax, lint and spec tasks."
+task :test => [:syntax, :lint, :spec]
+
+desc "Run syntax, lint and spec_standalone tasks."
+task :test_standalone => [:spec_prep, :syntax, :lint, :spec_standalone]
 
 exclude_paths = [
   "pkg/**/*",
@@ -9,21 +18,15 @@ exclude_paths = [
   "spec/**/*",
 ]
 
-PuppetLint.configuration.log_format = "%{path}:%{linenumber}:%{check}:%{KIND}:%{message}"
-PuppetLint.configuration.fail_on_warnings = true
-PuppetLint.configuration.send("disable_80chars")
-PuppetLint.configuration.send("disable_autoloader_layout")
-PuppetLint.configuration.send("disable_quoted_booleans")
-PuppetLint.configuration.send('disable_class_parameter_defaults')
-PuppetLint.configuration.send('disable_class_inherits_from_params_class')
-PuppetLint.configuration.ignore_paths = exclude_paths
+Rake::Task[:lint].clear
+PuppetLint::RakeTask.new :lint do |config|
+  config.ignore_paths = exclude_paths
+  config.fail_on_warnings = true
+  config.log_format = "%{path}:%{linenumber}:%{check}:%{KIND}:%{message}"
+  config.disable_checks = ["80chars", "class_inherits_from_params_class"]
+  #config.relative = true
+end
+
+PuppetLint.configuration.relative = true
+
 PuppetSyntax.exclude_paths = exclude_paths
-
-task :default => [:test]
-
-desc "Run syntax, lint, and spec tests."
-task :test => [
-  :syntax,
-  :lint,
-  :spec,
-]

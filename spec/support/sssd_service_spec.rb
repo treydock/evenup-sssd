@@ -1,12 +1,4 @@
-require 'spec_helper'
-
-describe 'sssd::service' do
-  let(:facts) {{:osfamily => 'RedHat', :operatingsystemrelease => '6.5'}}
-
-  let(:pre_condition) { "class { 'sssd': }" }
-
-  it { should create_class('sssd::service') }
-
+shared_examples_for 'sssd::service' do
   it do
     should contain_service('sssd').with({
       'ensure'      => 'running',

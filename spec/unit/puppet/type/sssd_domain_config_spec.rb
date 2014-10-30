@@ -3,7 +3,7 @@ require 'puppet/type/sssd_domain_config'
 
 describe 'Puppet::Type.type(:sssd_domain_config)' do
   before :each do
-    @sssd_config = Puppet::Type.type(:sssd_domain_config).new(:name => 'vars/foo', :value => 'bar')
+    @sssd_domain_config = Puppet::Type.type(:sssd_domain_config).new(:name => 'vars/foo', :value => 'bar')
   end
 
   it 'should require a name' do
@@ -35,26 +35,38 @@ describe 'Puppet::Type.type(:sssd_domain_config)' do
   end
 
   it 'should accept a valid value' do
-    @sssd_config[:value] = 'bar'
-    @sssd_config[:value].should == 'bar'
+    @sssd_domain_config[:value] = 'bar'
+    @sssd_domain_config[:value].should == 'bar'
   end
 
   it 'should not accept a value with whitespace' do
-    @sssd_config[:value] = 'b ar'
-    @sssd_config[:value].should == 'b ar'
+    @sssd_domain_config[:value] = 'b ar'
+    @sssd_domain_config[:value].should == 'b ar'
   end
 
   it 'should accept valid ensure values' do
-    @sssd_config[:ensure] = :present
-    @sssd_config[:ensure].should == :present
-    @sssd_config[:ensure] = :absent
-    @sssd_config[:ensure].should == :absent
+    @sssd_domain_config[:ensure] = :present
+    @sssd_domain_config[:ensure].should == :present
+    @sssd_domain_config[:ensure] = :absent
+    @sssd_domain_config[:ensure].should == :absent
   end
 
   it 'should not accept invalid ensure values' do
     expect {
-      @sssd_config[:ensure] = :latest
+      @sssd_domain_config[:ensure] = :latest
     }.to raise_error(Puppet::Error, /Invalid value/)
+  end
+
+  describe 'autorequire File resources' do
+    it 'should autorequire /etc/sssd/sssd.conf' do
+      conf = Puppet::Type.type(:file).new(:name => '/etc/sssd/sssd.conf')
+      catalog = Puppet::Resource::Catalog.new
+      catalog.add_resource @sssd_domain_config
+      catalog.add_resource conf
+      rel = @sssd_domain_config.autorequire[0]
+      rel.source.ref.should == conf.ref
+      rel.target.ref.should == @sssd_domain_config.ref
+    end
   end
 
 end

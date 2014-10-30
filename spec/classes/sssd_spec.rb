@@ -13,6 +13,10 @@ describe 'sssd' do
   it { should contain_anchor('sssd::begin').that_comes_before('Class[sssd::install]') }
   it { should contain_anchor('sssd::end') }
 
+  it_behaves_like 'sssd::install'
+  it_behaves_like 'sssd::config'
+  it_behaves_like 'sssd::service'
+
   # Test boolean validation
   [
     'ldap_enumerate',

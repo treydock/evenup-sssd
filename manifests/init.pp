@@ -111,13 +111,10 @@ class sssd (
   include 'sssd::config'
   include 'sssd::service'
 
-  anchor { 'sssd::begin': }
-  anchor { 'sssd::end': }
-
-  Anchor['sssd::begin'] ->
+  anchor { 'sssd::begin': } ->
   Class['sssd::install'] ->
   Class['sssd::config'] ->
   Class['sssd::service'] ->
-  Anchor['sssd::end']
+  anchor { 'sssd::end': }
 
 }

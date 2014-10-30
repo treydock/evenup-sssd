@@ -1,13 +1,4 @@
-require 'spec_helper'
-
-describe 'sssd::config' do
-  let(:facts) {{:osfamily => 'RedHat', :operatingsystemrelease => '6.5', :concat_basedir => '/var/lib/puppet/concat'}}
-
-  let(:pre_condition) { "class { 'sssd': }" }
-
-  it { should create_class('sssd::config') }
-  it { should create_class('sssd') }
-
+shared_examples_for 'sssd::config' do
   it { should_not contain_file('sssd_ldap_tls_cacert') }
 
   it do
@@ -198,94 +189,94 @@ describe 'sssd::config' do
   it { should_not contain_beaver__stanza('/var/log/sssd/sssd_nss.log') }
 
   context 'when setting filter_groups' do
-    let(:pre_condition) { "class { 'sssd': filter_groups => 'foo,bar' }" }
+    let(:params) {{ :filter_groups => 'foo,bar' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['filter_groups = foo,bar']) }
   end
 
   context 'when setting filter_users' do
-    let(:pre_condition) { "class { 'sssd': filter_users => 'bob,john' }" }
+    let(:params) {{ :filter_users => 'bob,john' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['filter_users = bob,john']) }
   end
 
   context 'when setting ldap_enumerate' do
-    let(:pre_condition) { "class { 'sssd': ldap_enumerate => true }" }
+    let(:params) {{ :ldap_enumerate => true }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['enumerate = TRUE']) }
   end
 
   context 'when setting ldap_base' do
-    let(:pre_condition) { "class { 'sssd': ldap_base => 'dc=company,dc=com' }" }
+    let(:params) {{ :ldap_base => 'dc=company,dc=com' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_search_base = dc=company,dc=com']) }
   end
 
   context 'when setting ldap_uri' do
-    let(:pre_condition) { "class { 'sssd': ldap_uri => 'ldap://ldap.company.com' }" }
+    let(:params) {{ :ldap_uri => 'ldap://ldap.company.com' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_uri = ldap://ldap.company.com']) }
     it { verify_contents(catalogue, '/etc/openldap/ldap.conf', ['URI ldap://ldap.company.com']) }
   end
 
   context 'when setting ldap_uri Array' do
-    let(:pre_condition) { "class { 'sssd': ldap_uri => ['ldap://ldap.company.com', 'ldap://ldap2.company.com'] }" }
+    let(:params) {{ :ldap_uri => ['ldap://ldap.company.com', 'ldap://ldap2.company.com'] }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_uri = ldap://ldap.company.com,ldap://ldap2.company.com']) }
     it { verify_contents(catalogue, '/etc/openldap/ldap.conf', ['URI ldap://ldap.company.com ldap://ldap2.company.com']) }
   end
 
   context 'when setting ldap_uri comma separated string' do
-    let(:pre_condition) { "class { 'sssd': ldap_uri => 'ldap://ldap.company.com,ldap://ldap2.company.com' }" }
+    let(:params) {{ :ldap_uri => 'ldap://ldap.company.com,ldap://ldap2.company.com' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_uri = ldap://ldap.company.com,ldap://ldap2.company.com']) }
     it { verify_contents(catalogue, '/etc/openldap/ldap.conf', ['URI ldap://ldap.company.com ldap://ldap2.company.com']) }
   end
 
   context 'when setting ldap_access_filter' do
-    let(:pre_condition) { "class { 'sssd': ldap_access_filter => 'objectclass=posixaccount' }" }
+    let(:params) {{ :ldap_access_filter => 'objectclass=posixaccount' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_access_filter = objectclass=posixaccount']) }
   end
 
   context 'when setting ldap_group_member' do
-    let(:pre_condition) { "class { 'sssd': ldap_group_member => 'memberUid' }" }
+    let(:params) {{ :ldap_group_member => 'memberUid' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_group_member = memberUid']) }
   end
 
   context 'when setting ldap_tls_reqcert' do
-    let(:pre_condition) { "class { 'sssd': ldap_tls_reqcert => 'always' }" }
+    let(:params) {{ :ldap_tls_reqcert => 'always' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_tls_reqcert = always']) }
   end
 
   context 'when setting ldap_tls_cacert' do
-    let(:pre_condition) { "class { 'sssd': ldap_tls_cacert => '/tmp/cert' }" }
+    let(:params) {{ :ldap_tls_cacert => '/tmp/cert' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_tls_cacert = /tmp/cert']) }
   end
 
   context 'when setting ldap_schema' do
-    let(:pre_condition) { "class { 'sssd': ldap_schema => 'rfc2307bis' }" }
+    let(:params) {{ :ldap_schema => 'rfc2307bis' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_schema = rfc2307bis']) }
   end
 
   context 'when setting ldap_pwd_policy' do
-    let(:pre_condition) { "class { 'sssd': ldap_pwd_policy => 'none' }" }
+    let(:params) {{ :ldap_pwd_policy => 'none' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_pwd_policy = none']) }
   end
 
   context 'when setting ldap_account_expire_policy' do
-    let(:pre_condition) { "class { 'sssd': ldap_account_expire_policy => '389ds' }" }
+    let(:params) {{ :ldap_account_expire_policy => '389ds' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_account_expire_policy = 389ds']) }
   end
 
   context 'when logsagent => beaver' do
-    let(:pre_condition) { "class { 'sssd': logsagent => 'beaver' }" }
+    let(:params) {{ :logsagent => 'beaver' }}
 
     it { should contain_beaver__stanza('/var/log/sssd/sssd_LDAP.log') }
     it { should contain_beaver__stanza('/var/log/sssd/sssd.log') }
@@ -294,13 +285,13 @@ describe 'sssd::config' do
   end
 
   context 'when make_home_dir => false' do
-    let(:pre_condition) { "class { 'sssd': make_home_dir => false }" }
+    let(:params) {{ :make_home_dir => false }}
 
     it { should contain_file('/etc/pam.d/system-auth-ac').without_content(/.*pam_mkhomedir.so.*/) }
   end
 
   context "when services => ['nss','pam','autofs']" do
-    let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'] }" }
+    let(:params) {{ :services => ['nss','pam','autofs'] }}
 
     it do
       verify_contents(catalogue, '/etc/sssd/sssd.conf', [
@@ -338,32 +329,32 @@ describe 'sssd::config' do
     end
 
     context 'when ldap_autofs_search_base => cn=automount,dc=company,dc=com' do
-      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'], ldap_autofs_search_base => 'cn=automount,dc=company,dc=com' }" }
+      let(:params) {{ :services => ['nss','pam','autofs'], :ldap_autofs_search_base => 'cn=automount,dc=company,dc=com' }}
 
       it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_autofs_search_base = cn=automount,dc=company,dc=com']) }
     end
 
     context 'when autofs_usetls => "no"' do
-      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'], autofs_usetls => 'no' }" }
+      let(:params) {{ :services => ['nss','pam','autofs'], :autofs_usetls => 'no' }}
 
       it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	usetls="no"']) }
     end
 
     context 'when autofs_tlsrequired => "no"' do
-      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'], autofs_tlsrequired => 'no' }" }
+      let(:params) {{ :services => ['nss','pam','autofs'], :autofs_tlsrequired => 'no' }}
 
       it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	tlsrequired="no"']) }
     end
 
     context 'when autofs_authrequired => "yes"' do
-      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs'], autofs_authrequired => 'yes' }" }
+      let(:params) {{ :services => ['nss','pam','autofs'], :autofs_authrequired => 'yes' }}
 
       it { verify_contents(catalogue, '/etc/autofs_ldap_auth.conf', ['	authrequired="yes"']) }
     end
   end
 
   context "when services => ['nss','pam','sudo']" do
-    let(:pre_condition) { "class { 'sssd': services => ['nss','pam','sudo'] }" }
+    let(:params) {{ :services => ['nss','pam','sudo'] }}
 
     it do
       verify_contents(catalogue, '/etc/sssd/sssd.conf', [
@@ -377,20 +368,20 @@ describe 'sssd::config' do
     it { verify_contents(catalogue, '/etc/nsswitch.conf', ['sudoers:    files sss']) }
 
     context 'when ldap_sudo_search_base => ou=sudoers,dc=company,dc=com' do
-      let(:pre_condition) { "class { 'sssd': services => ['nss','pam','sudo'], ldap_sudo_search_base => 'ou=sudoers,dc=company,dc=com' }" }
+      let(:params) {{ :services => ['nss','pam','sudo'], :ldap_sudo_search_base => 'ou=sudoers,dc=company,dc=com' }}
 
       it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_sudo_search_base = ou=sudoers,dc=company,dc=com']) }
     end
   end
 
   context "when services => ['nss','pam','autofs','sudo']" do
-    let(:pre_condition) { "class { 'sssd': services => ['nss','pam','autofs','sudo'] }" }
+    let(:params) {{ :services => ['nss','pam','autofs','sudo'] }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['services = nss,pam,autofs,sudo']) }
   end
 
   context 'when use_puppet_certs => true' do
-    let(:pre_condition) { "class { 'sssd': use_puppet_certs => true }" }
+    let(:params) {{ :use_puppet_certs => true }}
 
     before(:each) do
       ca_file = tmpfilename('ca.pem')
@@ -417,7 +408,7 @@ describe 'sssd::config' do
   end
 
   context 'when manage_pam_config => false' do
-    let(:pre_condition) { "class { 'sssd': manage_pam_config => false }" }
+    let(:params) {{ :manage_pam_config => false }}
     it { should_not contain_file('/etc/pam.d/password-auth') }
     it { should_not contain_file('/etc/pam.d/password-auth-ac') }
     it { should_not contain_file('/etc/pam.d/system-auth') }
@@ -425,7 +416,7 @@ describe 'sssd::config' do
   end
 
   context 'when manage_nsswitch => false' do
-    let(:pre_condition) { "class { 'sssd': manage_nsswitch => false }" }
+    let(:params) {{ :manage_nsswitch => false }}
     it { should_not contain_file('/etc/nsswitch.conf') }
   end
 end

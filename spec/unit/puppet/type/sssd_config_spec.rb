@@ -57,4 +57,16 @@ describe 'Puppet::Type.type(:sssd_config)' do
     }.to raise_error(Puppet::Error, /Invalid value/)
   end
 
+  describe 'autorequire File resources' do
+    it 'should autorequire /etc/sssd/sssd.conf' do
+      conf = Puppet::Type.type(:file).new(:name => '/etc/sssd/sssd.conf')
+      catalog = Puppet::Resource::Catalog.new
+      catalog.add_resource @sssd_config
+      catalog.add_resource conf
+      rel = @sssd_config.autorequire[0]
+      rel.source.ref.should == conf.ref
+      rel.target.ref.should == @sssd_config.ref
+    end
+  end
+
 end

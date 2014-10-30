@@ -26,4 +26,10 @@ Puppet::Type.newtype(:sssd_domain_config) do
       end
     end
   end
+
+  autorequire(:file) do
+    [
+      '/etc/sssd/sssd.conf',
+    ]
+  end
 end

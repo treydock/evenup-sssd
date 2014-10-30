@@ -30,8 +30,4 @@ class sssd::install {
     ensure_packages($sssd::params::autofs_packages)
   }
 
-  if member($sssd::services, 'sudo') {
-    ensure_packages($sssd::params::sudo_packages)
-  }
-
 }
