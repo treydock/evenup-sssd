@@ -380,6 +380,24 @@ shared_examples_for 'sssd::config' do
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['services = nss,pam,autofs,sudo']) }
   end
 
+  context "when ldap_configs defined" do
+    let(:params) do
+      {
+        :ldap_configs => {
+          'ldap_group_nesting_level'  => '2',
+          'ldap_deref_threshold'      => '10',
+        }
+      }
+    end
+
+    it do
+      verify_contents(catalogue, '/etc/sssd/sssd.conf', [
+        'ldap_deref_threshold = 10',
+        'ldap_group_nesting_level = 2',
+      ])
+    end
+  end
+
   context 'when use_puppet_certs => true' do
     let(:params) {{ :use_puppet_certs => true }}
 

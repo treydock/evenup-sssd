@@ -12,6 +12,8 @@
 #
 class sssd::params {
 
+  $ldap_configs = {}
+
   case $::osfamily {
     'RedHat': {
       $autofs_packages  = ['autofs']

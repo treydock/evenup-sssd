@@ -65,6 +65,9 @@ ldap_pwd_policy = <%= @ldap_pwd_policy %>
 ldap_account_expire_policy = <%= @ldap_account_expire_policy %>
 ldap_access_order = filter,expire
 ldap_access_filter = <%= @ldap_access_filter %>
+<% @ldap_configs.keys.sort.each do |ldap_config| -%>
+<%= ldap_config %> = <%= @ldap_configs[ldap_config] %>
+<% end -%>
 <% if @services.include?('autofs') -%>
 ldap_autofs_search_base = <%= @ldap_autofs_search_base_real %>
 ldap_autofs_map_object_class = automountMap

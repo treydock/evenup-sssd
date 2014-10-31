@@ -16,26 +16,6 @@ Include the SSSD module and it will set up PAM and the nsswitch for local and LD
   }
 </pre>
 
-Notes:
-------
-
-authconfig --enableshadow --passalgo=sha512 --enablelocauthorize \
---disablefingerprint --disablesmartcard \
---enablesssd --enablesssdauth \
---ldapserver=ldap://dc-ldap1.tamu.edu --ldapbasedn=dc=dc,dc=tamu,dc=edu \
---enableldapstarttls --enablerfc2307bis \
---update
-
-* /etc/libuser.conf
-* /etc/nsswitch.conf
-* /etc/openldap/ldap.conf
-* login.defs
-* pam.d/fingerprint-auth-ac
-* pam.d/password-auth-ac
-* pam.d/smartcard-auth-ac
-* pam.d/system-auth-ac
-* sysconfig/authconfig
-
 License:
 --------
 Released under the Apache 2.0 licence

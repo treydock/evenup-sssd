@@ -74,6 +74,7 @@ class sssd (
   $ldap_sudo_search_base      = 'UNSET',
   $manage_pam_config          = true,
   $manage_nsswitch            = true,
+  $ldap_configs               = $sssd::params::ldap_configs,
 ) inherits sssd::params {
 
   validate_array($services)
