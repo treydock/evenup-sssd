@@ -17,6 +17,7 @@ class sssd::params {
   case $::osfamily {
     'RedHat': {
       $autofs_packages  = ['autofs']
+      $name_service     = 'nslcd'
     }
 
     default: {

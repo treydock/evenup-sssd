@@ -74,6 +74,7 @@ class sssd (
   $ldap_sudo_search_base      = 'UNSET',
   $manage_pam_config          = true,
   $manage_nsswitch            = true,
+  $disable_name_service       = false,
   $ldap_configs               = $sssd::params::ldap_configs,
 ) inherits sssd::params {
 
@@ -83,6 +84,7 @@ class sssd (
   validate_bool($make_home_dir)
   validate_bool($manage_pam_config)
   validate_bool($manage_nsswitch)
+  validate_bool($disable_name_service)
 
   $ldap_uri_array = is_string($ldap_uri) ? {
     true    => split($ldap_uri, ','),

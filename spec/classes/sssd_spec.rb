@@ -24,6 +24,7 @@ describe 'sssd' do
     'make_home_dir',
     'manage_pam_config',
     'manage_nsswitch',
+    'disable_name_service',
   ].each do |param|
     context "with #{param} => 'foo'" do
       let(:params) {{ param.to_sym => 'foo' }}

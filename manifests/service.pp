@@ -18,6 +18,15 @@ class sssd::service {
     fail("Use of private class ${name} by ${caller_module_name}")
   }
 
+  if $sssd::disable_name_service {
+    service { 'nslcd':
+      ensure => 'stopped',
+      enable => false,
+      name   => $sssd::params::name_service,
+      before => Service['sssd'],
+    }
+  }
+
   service { 'sssd':
     ensure     => 'running',
     enable     => true,
