@@ -19,11 +19,13 @@ class sssd::install {
   }
 
   package { 'sssd':
-    ensure  => $sssd::package_ensure,
+    ensure => $sssd::package_ensure,
+    notify => Service['sssd'],
   }
 
   package { 'sssd-client':
-    ensure  => $sssd::package_ensure,
+    ensure => $sssd::package_ensure,
+    notify => Service['sssd'],
   }
 
   if member($sssd::services, 'autofs') {

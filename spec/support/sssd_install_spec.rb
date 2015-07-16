@@ -1,6 +1,6 @@
 shared_examples_for 'sssd::install' do
-  it { should contain_package('sssd').with_ensure('latest') }
-  it { should contain_package('sssd-client').with_ensure('latest') }
+  it { should contain_package('sssd').with_ensure('latest').with_notify('Service[sssd]') }
+  it { should contain_package('sssd-client').with_ensure('latest').with_notify('Service[sssd]') }
   it { should_not contain_package('autofs') }
 
   context "when package_ensure => 'installed'" do
