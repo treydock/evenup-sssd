@@ -18,14 +18,14 @@ netgroup:   files sss
 
 publickey:  nisplus
 
-<% if @services.include?('autofs') -%>
+<% if scope.lookupvar('sssd::services').include?('autofs') -%>
 automount:  files sss
 <% else -%>
 automount:  files
 <% end -%>
 aliases:    files nisplus
 
-<% if @services.include?('sudo') -%>
+<% if scope.lookupvar('sssd::services').include?('sudo') -%>
 sudoers:    files sss
 <% else -%>
 sudoers:    files

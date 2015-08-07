@@ -4,31 +4,31 @@ config_file_version = 2
 debug_level = 0x02F0
 reconnection_retries = 3
 sbus_timeout = 30
-services = <%= @services.join(',') %>
+services = <%= scope.lookupvar('sssd::services').join(',') %>
 domains = LDAP
 
 [nss]
 debug_level = 0x02F0
 reconnection_retries = 3
-filter_groups = <%= @filter_groups %>
-filter_users = <%= @filter_users %>
+filter_groups = <%= scope.lookupvar('sssd::filter_groups') %>
+filter_users = <%= scope.lookupvar('sssd::filter_users') %>
 
 [pam]
 debug_level = 0x02F0
 reconnection_retries = 3
 offline_credentials_expiration = 0
 
-<% if @services.include?('autofs') -%>
+<% if scope.lookupvar('sssd::services').include?('autofs') -%>
 [autofs]
 
 <% end -%>
 
-<% if @services.include?('sudo') -%>
+<% if scope.lookupvar('sssd::services').include?('sudo') -%>
 [sudo]
 
 <% end -%>
 
-<% if @services.include?('ssh') -%>
+<% if scope.lookupvar('sssd::services').include?('ssh') -%>
 [ssh]
 
 <% end -%>
@@ -37,45 +37,45 @@ offline_credentials_expiration = 0
 debug_level = 0x02F0
 cache_credentials = TRUE
 entry_cache_timeout = 6000
-enumerate = <%= @ldap_enumerate ? 'TRUE' : 'FALSE' %>
+enumerate = <%= scope.lookupvar('sssd::ldap_enumerate') ? 'TRUE' : 'FALSE' %>
 
 id_provider = ldap
 auth_provider = ldap
 chpass_provider = ldap
 access_provider = ldap
-<% if @services.include?('autofs') -%>
+<% if scope.lookupvar('sssd::services').include?('autofs') -%>
 autofs_provider = ldap
 <% end -%>
-<% if @services.include?('sudo') -%>
+<% if scope.lookupvar('sssd::services').include?('sudo') -%>
 sudo_provider = ldap
 <% end -%>
 
-ldap_uri = <%= @ldap_uri_array.join(',') %>
-ldap_search_base = <%= @ldap_base %>
+ldap_uri = <%= scope.lookupvar('sssd::ldap_uri_array').join(',') %>
+ldap_search_base = <%= scope.lookupvar('sssd::ldap_base') %>
 ldap_network_timeout = 3
-ldap_tls_reqcert = <%= @ldap_tls_reqcert %>
-ldap_tls_cacert = <%= @ldap_tls_cacert_real %>
-ldap_schema = <%= @ldap_schema %>
+ldap_tls_reqcert = <%= scope.lookupvar('sssd::ldap_tls_reqcert') %>
+ldap_tls_cacert = <%= scope.lookupvar('sssd::ldap_tls_cacert_real') %>
+ldap_schema = <%= scope.lookupvar('sssd::ldap_schema') %>
 ldap_id_use_start_tls = TRUE
 ldap_chpass_update_last_change = TRUE
-ldap_group_member = <%= @ldap_group_member %>
+ldap_group_member = <%= scope.lookupvar('sssd::ldap_group_member') %>
 ldap_group_object_class = posixGroup
 ldap_group_name = cn
-ldap_pwd_policy = <%= @ldap_pwd_policy %>
-ldap_account_expire_policy = <%= @ldap_account_expire_policy %>
+ldap_pwd_policy = <%= scope.lookupvar('sssd::ldap_pwd_policy') %>
+ldap_account_expire_policy = <%= scope.lookupvar('sssd::ldap_account_expire_policy') %>
 ldap_access_order = filter,expire
-ldap_access_filter = <%= @ldap_access_filter %>
-<% @ldap_configs.keys.sort.each do |ldap_config| -%>
-<%= ldap_config %> = <%= @ldap_configs[ldap_config] %>
+ldap_access_filter = <%= scope.lookupvar('sssd::ldap_access_filter') %>
+<% scope.lookupvar('sssd::ldap_configs').keys.sort.each do |ldap_config| -%>
+<%= ldap_config %> = <%= scope.lookupvar('sssd::ldap_configs')[ldap_config] %>
 <% end -%>
-<% if @services.include?('autofs') -%>
-ldap_autofs_search_base = <%= @ldap_autofs_search_base_real %>
+<% if scope.lookupvar('sssd::services').include?('autofs') -%>
+ldap_autofs_search_base = <%= scope.lookupvar('sssd::ldap_autofs_search_base_real') %>
 ldap_autofs_map_object_class = automountMap
 ldap_autofs_entry_object_class = automount
 ldap_autofs_map_name = ou
 ldap_autofs_entry_key = cn
 ldap_autofs_entry_value = automountInformation
 <% end -%>
-<% if @services.include?('sudo') -%>
-ldap_sudo_search_base = <%= @ldap_sudo_search_base_real %>
+<% if scope.lookupvar('sssd::services').include?('sudo') -%>
+ldap_sudo_search_base = <%= scope.lookupvar('sssd::ldap_sudo_search_base_real') %>
 <% end -%>

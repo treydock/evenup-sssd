@@ -17,7 +17,7 @@ password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_au
 password    sufficient    pam_sss.so use_authtok
 password    required      pam_deny.so
 
-<% if @make_home_dir -%>
+<% if scope.lookupvar('sssd::make_home_dir') -%>
 session     required      pam_mkhomedir.so umask=0022 skel=/etc/skel/
 <% end -%>
 session     optional      pam_keyinit.so revoke

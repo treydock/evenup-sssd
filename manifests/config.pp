@@ -23,6 +23,7 @@ class sssd::config {
       ensure  => 'present',
       path    => $sssd::ldap_tls_cacert_real,
       #content => x509_to_text($settings::localcacert),
+      content => undef,
       source  => "file://${settings::localcacert}",
       owner   => 'root',
       group   => 'root',
