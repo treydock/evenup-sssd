@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "the x509_to_text function" do
+describe "the x509_to_text function", :skip => true do
   include PuppetlabsSpec::Files
 
   let(:scope) { PuppetlabsSpec::PuppetInternals.scope }

@@ -413,6 +413,7 @@ shared_examples_for 'sssd::config' do
       should contain_file('sssd_ldap_tls_cacert').with({
         'ensure'  => 'present',
         'path'    => '/etc/pki/tls/certs/puppet-ca.crt',
+        'source'  => "file://#{Puppet.settings[:localcacert]}",
         'owner'   => 'root',
         'group'   => 'root',
         'mode'    => '0644',
