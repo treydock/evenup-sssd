@@ -67,6 +67,7 @@ class sssd (
   $ldap_account_expire_policy = 'shadow',
   $logsagent                  = '',
   $make_home_dir              = true,
+  $manage_autofs_service      = true,
   $ldap_autofs_search_base    = 'UNSET',
   $autofs_usetls              = 'yes',
   $autofs_tlsrequired         = 'yes',
@@ -75,7 +76,10 @@ class sssd (
   $manage_pam_config          = true,
   $manage_nsswitch            = true,
   $disable_name_service       = false,
-  $ldap_configs               = $sssd::params::ldap_configs,
+  $sssd_config_purge          = true,
+  $sssd_domain_config_purge   = true,
+  $sssd_configs               = {},
+  $sssd_domain_configs        = {},
 ) inherits sssd::params {
 
   validate_array($services)
@@ -85,6 +89,15 @@ class sssd (
   validate_bool($manage_pam_config)
   validate_bool($manage_nsswitch)
   validate_bool($disable_name_service)
+  validate_bool(
+    $manage_autofs_service,
+    $sssd_config_purge,
+    $sssd_domain_config_purge
+  )
+  validate_hash(
+    $sssd_configs,
+    $sssd_domain_configs,
+  )
 
   $ldap_uri_array = is_string($ldap_uri) ? {
     true    => split($ldap_uri, ','),
@@ -119,5 +132,13 @@ class sssd (
   Class['sssd::config'] ->
   Class['sssd::service'] ->
   anchor { 'sssd::end': }
+
+  Sssd_config <| |> ~> Service['sssd']
+  Sssd_domain_config <| |> ~> Service['sssd']
+
+  if 'autofs' in $services {
+    Sssd_config <| |> ~> Service['autofs']
+    Sssd_domain_config <| |> ~> Service['autofs']
+  }
 
 }
