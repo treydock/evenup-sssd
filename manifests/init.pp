@@ -54,7 +54,7 @@ class sssd (
   Array $services                     = ['nss','pam'],
   String $filter_groups               = 'root,wheel',
   String $filter_users                = 'root',
-  String $ldap_enumerate              = false,
+  Boolean $ldap_enumerate              = false,
   String $ldap_base                   = 'dc=example,dc=org',
   Variant[String, Array] $ldap_uri    = 'ldap://ldap.example.org',
   String $ldap_access_filter          = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',

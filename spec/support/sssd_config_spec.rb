@@ -37,7 +37,6 @@ shared_examples_for 'sssd::config' do
       'config_file_version = 2',
       'debug_level = 0x02F0',
       'reconnection_retries = 3',
-      'sbus_timeout = 30',
       'services = nss,pam',
       'domains = LDAP',
       '[nss]',
@@ -273,15 +272,6 @@ shared_examples_for 'sssd::config' do
     let(:params) {{ :ldap_account_expire_policy => '389ds' }}
 
     it { verify_contents(catalogue, '/etc/sssd/sssd.conf', ['ldap_account_expire_policy = 389ds']) }
-  end
-
-  context 'when logsagent => beaver' do
-    let(:params) {{ :logsagent => 'beaver' }}
-
-    it { should contain_beaver__stanza('/var/log/sssd/sssd_LDAP.log') }
-    it { should contain_beaver__stanza('/var/log/sssd/sssd.log') }
-    it { should contain_beaver__stanza('/var/log/sssd/sssd_pam.log') }
-    it { should contain_beaver__stanza('/var/log/sssd/sssd_nss.log') }
   end
 
   context 'when make_home_dir => false' do

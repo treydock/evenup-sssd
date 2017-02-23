@@ -28,7 +28,7 @@ describe 'sssd' do
   ].each do |param|
     context "with #{param} => 'foo'" do
       let(:params) {{ param.to_sym => 'foo' }}
-      it { expect { should create_class('sssd') }.to raise_error(Puppet::Error, /is not a boolean/) }
+      it { expect { should create_class('sssd') }.to raise_error }
     end
   end
 
@@ -38,7 +38,7 @@ describe 'sssd' do
   ].each do |param|
     context "with #{param} => 'foo'" do
       let(:params) {{ param.to_sym => 'foo' }}
-      it { expect { should create_class('sssd') }.to raise_error(Puppet::Error, /is not an Array/) }
+      it { expect { should create_class('sssd') }.to raise_error }
     end
   end
 end
