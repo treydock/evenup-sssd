@@ -28,6 +28,10 @@ class sssd::install {
     notify => Service['sssd'],
   }
 
+  package { 'sssd-tools':
+    ensure => $sssd::package_ensure,
+  }
+
   if member($sssd::services, 'autofs') {
     ensure_packages($sssd::params::autofs_packages)
   }
