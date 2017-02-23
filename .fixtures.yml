@@ -1,7 +1,6 @@
 fixtures:
   repositories:
     beaver: https://github.com/evenup/evenup-beaver.git
-    systemd: https://github.com/camptocamp/puppet-systemd.git
     concat: https://github.com/puppetlabs/puppetlabs-concat.git
     stdlib:
       repo: https://github.com/puppetlabs/puppetlabs-stdlib.git
