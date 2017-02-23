@@ -72,6 +72,7 @@ class sssd (
   String $autofs_tlsrequired          = 'yes',
   String $autofs_authrequired         = 'no',
   String $ldap_sudo_search_base       = 'UNSET',
+  Boolean $manage_openldap_config     = true,
   Boolean $manage_pam_config          = true,
   Boolean $manage_nsswitch            = true,
   Boolean $disable_name_service       = false,

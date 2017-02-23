@@ -32,12 +32,14 @@ class sssd::config {
     }
   }
 
-  file { '/etc/openldap/ldap.conf':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('sssd/ldap.conf.erb'),
+  if $sssd::manage_openldap_config {
+    file { '/etc/openldap/ldap.conf':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template('sssd/ldap.conf.erb'),
+    }
   }
 
   file { '/etc/sssd/sssd.conf':
