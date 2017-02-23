@@ -76,7 +76,10 @@ class sssd (
   Boolean $manage_pam_config          = true,
   Boolean $manage_nsswitch            = true,
   Boolean $disable_name_service       = false,
-  Hash $ldap_configs                  = $sssd::params::ldap_configs,
+  Boolean $sssd_config_purge          = true,
+  Boolean $sssd_domain_config_purge   = true,
+  Hash $sssd_configs               = {},
+  Hash $sssd_domain_configs        = {},
 ) inherits sssd::params {
 
   $ldap_uri_array = $ldap_uri ? {
@@ -112,5 +115,13 @@ class sssd (
   Class['sssd::config'] ->
   Class['sssd::service'] ->
   anchor { 'sssd::end': }
+
+  Sssd_config <| |> ~> Service['sssd']
+  Sssd_domain_config <| |> ~> Service['sssd']
+
+  if 'autofs' in $services {
+    Sssd_config <| |> ~> Service['autofs']
+    Sssd_domain_config <| |> ~> Service['autofs']
+  }
 
 }
