@@ -50,45 +50,37 @@
 # Copyright 2013 EvenUp.
 #
 class sssd (
-  $package_ensure             = 'latest',
-  $services                   = ['nss','pam'],
-  $filter_groups              = 'root,wheel',
-  $filter_users               = 'root',
-  $ldap_enumerate             = false,
-  $ldap_base                  = 'dc=example,dc=org',
-  $ldap_uri                   = 'ldap://ldap.example.org',
-  $ldap_access_filter         = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
-  $ldap_group_member          = 'uniquemember',
-  $ldap_tls_reqcert           = 'demand',
-  $ldap_tls_cacert            = 'UNSET',
-  $use_puppet_certs           = false,
-  $ldap_schema                = 'rfc2307',
-  $ldap_pwd_policy            = 'shadow',
-  $ldap_account_expire_policy = 'shadow',
-  $logsagent                  = '',
-  $make_home_dir              = true,
-  $ldap_autofs_search_base    = 'UNSET',
-  $autofs_usetls              = 'yes',
-  $autofs_tlsrequired         = 'yes',
-  $autofs_authrequired        = 'no',
-  $ldap_sudo_search_base      = 'UNSET',
-  $manage_pam_config          = true,
-  $manage_nsswitch            = true,
-  $disable_name_service       = false,
-  $ldap_configs               = $sssd::params::ldap_configs,
+  String $package_ensure              = 'latest',
+  Array $services                     = ['nss','pam'],
+  String $filter_groups               = 'root,wheel',
+  String $filter_users                = 'root',
+  String $ldap_enumerate              = false,
+  String $ldap_base                   = 'dc=example,dc=org',
+  Variant[String, Array] $ldap_uri    = 'ldap://ldap.example.org',
+  String $ldap_access_filter          = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
+  String $ldap_group_member           = 'uniquemember',
+  String $ldap_tls_reqcert            = 'demand',
+  String $ldap_tls_cacert             = 'UNSET',
+  Boolean $use_puppet_certs           = false,
+  String $ldap_schema                 = 'rfc2307',
+  String $ldap_pwd_policy             = 'shadow',
+  String $ldap_account_expire_policy  = 'shadow',
+  Boolean $make_home_dir              = true,
+  Boolean $manage_autofs_service      = true,
+  String $ldap_autofs_search_base     = 'UNSET',
+  String $autofs_usetls               = 'yes',
+  String $autofs_tlsrequired          = 'yes',
+  String $autofs_authrequired         = 'no',
+  String $ldap_sudo_search_base       = 'UNSET',
+  Boolean $manage_pam_config          = true,
+  Boolean $manage_nsswitch            = true,
+  Boolean $disable_name_service       = false,
+  Hash $ldap_configs                  = $sssd::params::ldap_configs,
 ) inherits sssd::params {
 
-  validate_array($services)
-  validate_bool($ldap_enumerate)
-  validate_bool($use_puppet_certs)
-  validate_bool($make_home_dir)
-  validate_bool($manage_pam_config)
-  validate_bool($manage_nsswitch)
-  validate_bool($disable_name_service)
-
-  $ldap_uri_array = is_string($ldap_uri) ? {
-    true    => split($ldap_uri, ','),
-    default => $ldap_uri,
+  $ldap_uri_array = $ldap_uri ? {
+    String => split($ldap_uri, ','),
+    Array  => $ldap_uri,
   }
 
   $ldap_tls_cacert_real = $ldap_tls_cacert ? {

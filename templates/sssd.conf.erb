@@ -3,7 +3,6 @@
 config_file_version = 2
 debug_level = 0x02F0
 reconnection_retries = 3
-sbus_timeout = 30
 services = <%= scope.lookupvar('sssd::services').join(',') %>
 domains = LDAP
 
