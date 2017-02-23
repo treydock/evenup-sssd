@@ -10,21 +10,6 @@ shared_examples_for 'sssd::service' do
     })
   end
 
-  context "when services => ['nss','pam','autofs']" do
-    let(:params) {{ :services => ['nss','pam','autofs'] }}
-
-    it do
-      should contain_service('autofs').with({
-        'ensure'      => 'running',
-        'enable'      => 'true',
-        'hasstatus'   => 'true',
-        'hasrestart'  => 'true',
-        'require'     => 'Service[sssd]',
-        'subscribe'   => ['File[/etc/autofs_ldap_auth.conf]', 'File[/etc/sssd/sssd.conf]'],
-      })
-    end
-  end
-
   context "when disable_name_service => true" do
     let(:params) {{ :disable_name_service => true }}
 

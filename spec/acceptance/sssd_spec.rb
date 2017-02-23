@@ -4,7 +4,18 @@ describe 'sssd class' do
   context 'default parameters' do
     it 'should run successfully' do
       pp =<<-EOS
-        class { 'sssd': }
+        class { 'sssd':
+          configs => {
+            'sssd' => {
+              'services' => ['nss','pam'],
+              'domains' => 'LDAP',
+            },
+            'domain/LDAP' => {
+              'id_provider' => 'ldap',
+              'auth_provider' => 'ldap',
+            },
+          },
+        }
       EOS
 
       apply_manifest(pp, :catch_failures => true)

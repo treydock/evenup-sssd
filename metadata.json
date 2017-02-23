@@ -1,18 +1,28 @@
 {
-  "name": "evenup-sssd",
-  "version": "0.6.0",
-  "author": "Justin Lambert <jlambert@letsevenup.com>",
-  "license": "Apache-2.0",
-  "summary": "Manages SSSD",
-  "source": "https://github.com/evenup/evenup-sssd",
-  "project_page": "https://github.com/evenup/evenup-sssd",
-  "issues_url": "https://github.com/evenup/evenup-sssd/issues",
-  "tags": ["sssd", "authentication", "ldap", "openldap", "ipa", "freeipa"],
+  "name": "treydock-sssd",
+  "version": "0.0.1",
+  "author": "treydock",
+  "summary": "sssd Puppet module",
+  "license": "Apache 2.0",
+  "source": "git://github.com/treydock/puppet-module-sssd.git",
+  "issues_url": "https://github.com/treydock/puppet-module-sssd/issues",
+  "project_page": "https://github.com/treydock/puppet-module-sssd",
   "operatingsystem_support": [
-    { "operatingsystem": "RedHat", "operatingsystemrelease": [ "6", "7" ] },
-    { "operatingsystem": "CentOS", "operatingsystemrelease": [ "6", "7" ] }
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [ "6", "7" ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [ "6", "7" ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [ "6", "7" ]
+    }
   ],
   "dependencies": [
-    { "name": "puppetlabs/stdlib", "version_requirement": ">=3.2.0 <5.0.0" }
+    { "name": "puppetlabs-stdlib", "version_range": ">= 3.2.0 <5.0.0" },
   ]
 }
+

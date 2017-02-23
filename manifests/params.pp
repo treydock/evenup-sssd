@@ -12,11 +12,16 @@
 #
 class sssd::params {
 
-  $ldap_configs = {}
+  $configs = {}
+
+  if versioncmp($::rubyversion, '1.9.3') >= 0 {
+    $config_template = "${module_name}/sssd.conf.erb"
+  } else {
+    $config_template = "${module_name}/sssd.conf.sorted.erb"
+  }
 
   case $::osfamily {
     'RedHat': {
-      $autofs_packages  = ['autofs']
       $name_service     = 'nslcd'
     }
 

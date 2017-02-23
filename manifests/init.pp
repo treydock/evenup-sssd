@@ -51,56 +51,9 @@
 #
 class sssd (
   String $package_ensure              = 'latest',
-  Array $services                     = ['nss','pam'],
-  String $filter_groups               = 'root,wheel',
-  String $filter_users                = 'root',
-  Boolean $ldap_enumerate              = false,
-  String $ldap_base                   = 'dc=example,dc=org',
-  Variant[String, Array] $ldap_uri    = 'ldap://ldap.example.org',
-  String $ldap_access_filter          = '(&(objectclass=shadowaccount)(objectclass=posixaccount))',
-  String $ldap_group_member           = 'uniquemember',
-  String $ldap_tls_reqcert            = 'demand',
-  String $ldap_tls_cacert             = 'UNSET',
-  Boolean $use_puppet_certs           = false,
-  String $ldap_schema                 = 'rfc2307',
-  String $ldap_pwd_policy             = 'shadow',
-  String $ldap_account_expire_policy  = 'shadow',
-  Boolean $make_home_dir              = true,
-  Boolean $manage_autofs_service      = true,
-  String $ldap_autofs_search_base     = 'UNSET',
-  String $autofs_usetls               = 'yes',
-  String $autofs_tlsrequired          = 'yes',
-  String $autofs_authrequired         = 'no',
-  String $ldap_sudo_search_base       = 'UNSET',
-  Boolean $manage_openldap_config     = true,
-  Boolean $manage_pam_config          = true,
-  Boolean $manage_nsswitch            = true,
   Boolean $disable_name_service       = false,
-  Hash $ldap_configs                  = $sssd::params::ldap_configs,
+  Hash $configs                       = $sssd::params::configs,
 ) inherits sssd::params {
-
-  $ldap_uri_array = $ldap_uri ? {
-    String => split($ldap_uri, ','),
-    Array  => $ldap_uri,
-  }
-
-  $ldap_tls_cacert_real = $ldap_tls_cacert ? {
-    'UNSET' => $use_puppet_certs ? {
-      true    => '/etc/pki/tls/certs/puppet-ca.crt',
-      false   => '/etc/pki/tls/certs/ca-bundle.crt',
-    },
-    default => $ldap_tls_cacert,
-  }
-
-  $ldap_autofs_search_base_real = $ldap_autofs_search_base ? {
-    'UNSET' => "cn=automount,${ldap_base}",
-    default => $ldap_autofs_search_base,
-  }
-
-  $ldap_sudo_search_base_real = $ldap_sudo_search_base ? {
-    'UNSET' => "ou=sudoers,${ldap_base}",
-    default => $ldap_sudo_search_base,
-  }
 
   # Containment
   include 'sssd::install'
